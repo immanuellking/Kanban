@@ -6,7 +6,7 @@ export default function BoardTabs() {
       <span className="pl-6 text-gray-400 text-sm">All Boards (2)</span>
 
       <div className="h-full">
-        <ul className="pr-6 space-y-2 max-h-[25rem] overflow-y-auto no-scrollbar">
+        <ul className="pr-6 space-y-4 max-h-[25rem] overflow-y-auto no-scrollbar">
           <li className="text-white flex items-center gap-x-2 bg-[#635FC7] py-4 pl-6 rounded-r-full cursor-pointer">
             <svg
               stroke="currentColor"
