@@ -4,7 +4,7 @@ import MainBoard from "./MainBoard";
 
 function Kanban() {
   return (
-    <main className="flex min-h-[100vh]">
+    <main className="flex h-screen">
       <SideBar />
 
       <MainBoard />
