@@ -11,7 +11,7 @@ export default function SideBar() {
       <aside
         className={`${
           open ? "flex" : "hidden"
-        } w-[20%] bg-[#2B2C37] pt-8 pb-4 h-screen flex-col`}
+        } w-[23%] bg-[#2B2C37] border-r-[1px] border-[#828fa3]/30 pt-8 pb-4 h-screen flex-col`}
       >
         <Logo />
 
