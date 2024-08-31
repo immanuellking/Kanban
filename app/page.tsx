@@ -1,9 +1,5 @@
-import Image from "next/image";
+import Kanban from "@/components/Kanban";
 
 export default function Home() {
-  return (
-    <div>
-      Test
-    </div>
-  );
+  return <Kanban />;
 }
