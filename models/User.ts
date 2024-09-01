@@ -1,13 +1,9 @@
-import { Schema, model } from "mongoose";
+import { Schema, model, models } from "mongoose";
 
 const userSchema = new Schema({
-  email: {
-    type: String,
-    minLength: 10,
-    required: true,
-    lowercase: true,
-  },
+  email: { type: String, required: true, unique: true, lowercase: true },
+//   clerkId: { type: String, required: true, unique: true },
+  // Add more fields as needed
 });
 
-const User = model("User", userSchema);
-export default User;
+export default models.User || model("User", userSchema);
