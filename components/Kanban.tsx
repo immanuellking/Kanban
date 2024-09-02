@@ -1,13 +1,16 @@
-import React from "react";
 import SideBar from "./SideBar";
 import MainBoard from "./MainBoard";
+import { addNewUserToDb, getAllBoards } from "@/lib/actions";
 
-function Kanban() {
+
+async function Kanban() {
+    const isSignedIn = await addNewUserToDb()
+    const check = await getAllBoards();
+
   return (
     <main className="flex h-screen">
       <SideBar />
-
-      <MainBoard />
+      <MainBoard isSignedIn={isSignedIn} />
     </main>
   );
 }
