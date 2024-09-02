@@ -1,9 +1,12 @@
 "use client";
-import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 
-export default function BoardContainer() {
-  const { isSignedIn } = useUser();
+
+export default function BoardContainer({
+  isSignedIn,
+}: {
+  isSignedIn: boolean;
+}) {
   const { push } = useRouter();
 
   return (
