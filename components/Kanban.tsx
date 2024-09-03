@@ -1,10 +1,10 @@
 import SideBar from "./SideBar";
 import MainBoard from "./MainBoard";
-import { addNewUserToDb, getAllBoards } from "@/lib/actions";
+import { createNewUser, getAllBoards } from "@/lib/data";
 
 
 async function Kanban() {
-    const isSignedIn = await addNewUserToDb()
+    const isSignedIn = await createNewUser()
     const check = await getAllBoards();
 
   return (
