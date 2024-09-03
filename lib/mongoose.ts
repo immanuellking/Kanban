@@ -18,12 +18,7 @@ async function dbConnect() {
   }
 
   try {
-    const url = process.env.MONGO_URL;
-    if (!url) {
-      throw new Error("Define MONGO_URI in your env.local");
-    }
-
-    await mongoose.connect(url);
+    await mongoose.connect(MONGODB_URI);
 
     isConnected = true;
     console.log("Connected to MongoDB");
