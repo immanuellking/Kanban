@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import { poppins } from "@/components/font";
+import { DialogProvider } from "@/context/dialogContext";
+import CreateNewBoardModal from "@/components/CreateNewBoardModal";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,9 +17,14 @@ export default function RootLayout({
 }>) {
   return (
     <ClerkProvider>
-      <html lang="en">
-        <body className={poppins.className}>{children}</body>
-      </html>
+      <DialogProvider>
+        <html lang="en">
+          <body className={poppins.className}>
+            {children}
+            <CreateNewBoardModal />
+          </body>
+        </html>
+      </DialogProvider>
     </ClerkProvider>
   );
 }
