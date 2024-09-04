@@ -12,7 +12,7 @@ export default function BoardHeader() {
           <svg
             stroke="currentColor"
             fill="currentColor"
-            stroke-width="0"
+            strokeWidth="0"
             viewBox="0 0 24 24"
             className="text-[2rem] text-[#828fa3]"
             height="1em"
@@ -33,7 +33,7 @@ export default function BoardHeader() {
             <svg
               stroke="currentColor"
               fill="currentColor"
-              stroke-width="0"
+              strokeWidth="0"
               viewBox="0 0 16 16"
               className="text-[3rem]"
               height="1.5rem"
@@ -49,7 +49,7 @@ export default function BoardHeader() {
             <svg
               stroke="currentColor"
               fill="currentColor"
-              stroke-width="0"
+              strokeWidth="0"
               viewBox="0 0 16 16"
               className="text-[1.2rem] text-[#828fa3]"
               height="1em"
