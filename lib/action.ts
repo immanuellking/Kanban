@@ -1,15 +1,16 @@
 "use server";
-
 import Board from "@/models/Board";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
+import { unstable_noStore as noStore } from "next/cache";
 
 type BoardType = {
   board_name: string;
 };
 
 export async function createBoard(values: BoardType) {
+  noStore();
   const { userId } = auth();
 
   if (!userId) {
@@ -19,20 +20,22 @@ export async function createBoard(values: BoardType) {
   try {
     const board = await Board.create({
       board_name: values.board_name,
+      user_id: userId,
     });
 
-    const updateResult = await User.updateOne(
+    const updatedUser = await User.findOneAndUpdate(
       { clerkId: userId },
-      { $push: { boards: board._id } }
+      { $push: { boards: board._id } },
+      { new: true }
     );
 
-    if (updateResult.modifiedCount === 0) {
+    if (updatedUser.modifiedCount === 0) {
       throw new Error("Failed to update the user with the new board.");
     }
 
     revalidatePath("/");
 
-    // return board; 
+    // return board;
   } catch (error) {
     console.error("Error creating board or updating user:", error);
     throw new Error("Failed to create board or update user.");
