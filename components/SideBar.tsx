@@ -3,7 +3,7 @@ import Logo from "./Logo";
 import BoardTabs from "./BoardTabs";
 import { useState } from "react";
 
-export default function SideBar() {
+export default function SideBar({ boardTabs }: { boardTabs: BoardTab[] }) {
   const [open, setOpen] = useState<boolean>(true);
 
   return (
@@ -15,7 +15,7 @@ export default function SideBar() {
       >
         <Logo />
 
-        <BoardTabs />
+        <BoardTabs boardTabs={boardTabs} />
 
         <button
           className="mt-auto mr-6 pl-6 py-4 text-white flex items-center gap-x-3 hover:bg-white hover:text-[#635FC7] rounded-r-full capitalize transition-all duration-150 ease-linear cursor-pointer"
