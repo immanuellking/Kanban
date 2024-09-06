@@ -1,3 +1,4 @@
+import Board from "@/models/Board";
 import dbConnect from "./mongoose";
 import User from "@/models/User";
 import { auth } from "@clerk/nextjs/server";
@@ -45,4 +46,34 @@ async function fetchClerkUser(userId: string) {
   return data;
 }
 
-export async function getAllBoards() {}
+export async function getAllBoards() {
+  const { userId } = auth();
+
+  if (!userId) {
+    console.error("User is not authenticated.");
+    return [];
+  }
+
+  try {
+    const boardsMg = await Board.where("user_id")
+      .equals(`${userId}`)
+      .select("board_name user_id");
+
+    const boards = boardsMg.map((board) => ({
+      user_id: board.user_id,
+      board_name: board.board_name,
+    })); // Convert to plain objects
+
+    // console.log("USER CHECKING", boards);
+
+    if (!boards) {
+      console.log("No boards found for the user.");
+      return [];
+    }
+
+    return boards;
+  } catch (error) {
+    console.error("Error fetching boards:", error);
+    return [];
+  }
+}
