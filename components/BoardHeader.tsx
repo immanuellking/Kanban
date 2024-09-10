@@ -1,10 +1,16 @@
+"use client";
+import { useSearchParams } from "next/navigation";
 import React from "react";
 
 export default function BoardHeader() {
+  const searchParams = useSearchParams();
+  const params = new URLSearchParams(searchParams);
+  const currentTab = params.get("board");
+
   return (
     <div className="w-full flex items-center justify-between px-10 py-6 bg-[#2B2C37]">
       <div>
-        <h1 className="text-2xl text-white font-semibold">Test</h1>
+        <h1 className="text-2xl text-white font-semibold">{currentTab}</h1>
       </div>
 
       <div className="flex gap-x-12">
@@ -30,6 +36,8 @@ export default function BoardHeader() {
 
         <div className="flex items-center gap-x-2">
           <button className="flex text-white font-semibold bg-[#635FC7] py-4 px-8 rounded-full">
+            {" "}
+            {/*Disale when board is empty*/}
             <svg
               stroke="currentColor"
               fill="currentColor"
