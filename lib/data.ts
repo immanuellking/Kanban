@@ -46,7 +46,7 @@ async function fetchClerkUser(userId: string) {
   return data;
 }
 
-export async function getAllBoards() {
+export async function getBoardTabs() {
   const { userId } = auth();
 
   if (!userId) {
@@ -62,9 +62,10 @@ export async function getAllBoards() {
     const boards = boardsMg.map((board) => ({
       user_id: board.user_id,
       board_name: board.board_name,
+      _id: board._id.toString(),
     })); // Convert to plain objects
 
-    // console.log("USER CHECKING", boards);
+    // console.log("USER CHECKING", boardsMg);
 
     if (!boards) {
       console.log("No boards found for the user.");
@@ -76,4 +77,26 @@ export async function getAllBoards() {
     console.error("Error fetching boards:", error);
     return [];
   }
+}
+
+export async function getBoardData(query: string) {
+  const boardRawData = await Board.where("board_name")
+    .equals(`${query}`)
+    .select("columns")
+    .populate("columns");
+
+  if (boardRawData.length > 0 && boardRawData[0].columns) {
+    const boardData = boardRawData[0].columns.map((column: any) => ({
+      // Map through the columns as needed
+      _id: column._id,
+      column_name: column.column_name,
+    }));
+
+    console.log("Mapped Board Data:", boardData);
+    return boardData;
+  } else {
+    console.log("No columns found for the given board.");
+    return [];
+  }
+  // console.log("Board DATA", boradRawData?.columns);
 }
