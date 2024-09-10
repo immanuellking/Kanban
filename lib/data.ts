@@ -88,7 +88,7 @@ export async function getBoardData(query: string) {
   if (boardRawData.length > 0 && boardRawData[0].columns) {
     const boardData = boardRawData[0].columns.map((column: any) => ({
       // Map through the columns as needed
-      _id: column._id,
+      _id: column._id.toString(),
       column_name: column.column_name,
     }));
 
