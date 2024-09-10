@@ -1,15 +1,16 @@
 import SideBar from "./SideBar";
 import MainBoard from "./MainBoard";
-import { createNewUser, getAllBoards } from "@/lib/data";
+import { createNewUser, getBoardTabs, getBoardData } from "@/lib/data";
 
-async function Kanban() {
+async function Kanban({ boardQuery }: { boardQuery: string }) {
   const isSignedIn = await createNewUser();
-  const boardTabs = await getAllBoards();
+  const boardTabs = await getBoardTabs();
+  const boardData = await getBoardData(boardQuery);
 
   return (
     <main className="flex h-screen">
       <SideBar boardTabs={boardTabs} />
-      <MainBoard isSignedIn={isSignedIn} />
+      <MainBoard isSignedIn={isSignedIn} boardData={boardData} />
     </main>
   );
 }
