@@ -1,4 +1,4 @@
-import { Schema, models, model } from "mongoose";
+import { Schema, models, model, SchemaTypes } from "mongoose";
 
 const BoardSchema = new Schema({
   board_name: {
@@ -9,8 +9,12 @@ const BoardSchema = new Schema({
     type: String,
     required: true,
   },
+  columns: [
+    {
+      type: SchemaTypes.ObjectId,
+      ref: "Column",
+    },
+  ],
 });
 
-const Board = models.Board || model("Board", BoardSchema);
-
-export default Board;
+export default models.Board || model("Board", BoardSchema);
