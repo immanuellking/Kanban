@@ -6,11 +6,11 @@ export default function MainBoard({
   boardData,
 }: {
   isSignedIn: boolean;
-  boardData: Column[];
+  boardData: BoardData[];
 }) {
   return (
-    <main className="w-full h-screen flex flex-col">
-      <BoardHeader />
+    <main className="w-[82%] h-screen flex flex-col">
+      <BoardHeader boardData={boardData}/>
       <BoardContainer isSignedIn={isSignedIn} boardData={boardData} />
     </main>
   );
