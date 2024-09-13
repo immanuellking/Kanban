@@ -50,7 +50,7 @@ export async function getBoardTabs() {
   const { userId } = auth();
 
   if (!userId) {
-    console.error("User is not authenticated.");
+    console.error("Failed to get Board Tabs data, User is not authenticated.");
     return [];
   }
 
@@ -80,23 +80,42 @@ export async function getBoardTabs() {
 }
 
 export async function getBoardData(query: string) {
-  const boardRawData = await Board.where("board_name")
-    .equals(`${query}`)
-    .select("columns")
-    .populate("columns");
+  const { userId } = auth();
 
-  if (boardRawData.length > 0 && boardRawData[0].columns) {
-    const boardData = boardRawData[0].columns.map((column: any) => ({
-      // Map through the columns as needed
-      _id: column._id.toString(),
-      column_name: column.column_name,
-    }));
-
-    console.log("Mapped Board Data:", boardData);
-    return boardData;
-  } else {
-    console.log("No columns found for the given board.");
+  if (!userId) {
+    console.error("Failed to get Board Data, User is not authenticated.");
     return [];
   }
+
+  try {
+    const boardRawData = await Board.where("board_name")
+      .equals(`${query}`)
+      .select("board_name columns")
+      .populate("columns");
+
+    // console.log("Board RAW DATA", boardRawData);
+
+    if (boardRawData.length > 0 && boardRawData[0].columns) {
+      const boardData = boardRawData.map((board) => ({
+        board_id: board._id.toString(),
+        board_name: board.board_name,
+        columns: board.columns.map((column: any) => ({
+          // Map through the columns as needed
+          _id: column._id.toString(),
+          column_name: column.column_name,
+        }))
+      }));
+
+      // console.log("Mapped Board Data:", boardData[0].columns);
+      return boardData;
+    } else {
+      console.log("No columns found for the given board.");
+      return [];
+    }
+  } catch (error) {
+    console.error("Error fetching boards Columns Data:", error);
+    return [];
+  }
+
   // console.log("Board DATA", boradRawData?.columns);
 }
