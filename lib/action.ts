@@ -11,6 +11,10 @@ type BoardType = {
   columns: { column_name: string }[];
 };
 
+interface AddNewColumnType extends BoardType {
+  board_id: string;
+}
+
 export async function createBoard(values: BoardType) {
   noStore();
   const { userId } = auth();
@@ -25,17 +29,19 @@ export async function createBoard(values: BoardType) {
       user_id: userId,
     });
 
-    const createdColumns = await Promise.all(
-      values.columns.map((column) =>
-        Column.create({
-          column_name: column.column_name,
-          user_id: userId,
-          board_id: board._id, // Set the board_id later when the board is created
-        })
-      )
-    );
+    const columnIds = await createdColumns(values.columns, userId, board._id);
 
-    const columnIds = createdColumns.map((column) => column._id);
+    // const createdColumns = await Promise.all(
+    //   values.columns.map((column) =>
+    //     Column.create({
+    //       column_name: column.column_name,
+    //       user_id: userId,
+    //       board_id: board._id, // Set the board_id later when the board is created
+    //     })
+    //   )
+    // );
+
+    // const columnIds = createdColumns.map((column) => column._id);
 
     await Board.findByIdAndUpdate(board._id, {
       columns: columnIds,
@@ -72,4 +78,61 @@ export async function checkBoardNameExists(name: string): Promise<boolean> {
     console.error("Error checking board name existence:", error);
     return false; // Fallback to false in case of an error
   }
+}
+
+export async function addNewColumn(values: AddNewColumnType) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
+  const columnIds = await createdColumns(
+    values.columns,
+    userId,
+    values.board_id
+  );
+
+  // const createdColumns = await Promise.all(
+  //   values.columns.map((column) =>
+  //     Column.create({
+  //       column_name: column.column_name,
+  //       user_id: userId,
+  //       board_id: values.board_id,
+  //     })
+  //   )
+  // );
+  // const columnIds = createdColumns.map((column) => column._id);
+
+  await Promise.all(
+    columnIds.map((id) =>
+      Board.findByIdAndUpdate(
+        values.board_id,
+        { $push: { columns: { $each: columnIds } } },
+        { new: true }
+      )
+    )
+  );
+
+  revalidatePath("/");
+}
+
+async function createdColumns(
+  columns: { column_name: string }[],
+  userId: string,
+  board_id: string
+) {
+  const createdColumns = await Promise.all(
+    columns.map((column) =>
+      Column.create({
+        column_name: column.column_name,
+        user_id: userId,
+        board_id: board_id, // Set the board_id later when the board is created
+      })
+    )
+  );
+
+  const columnIds = createdColumns.map((column) => column._id);
+
+  return columnIds;
 }
