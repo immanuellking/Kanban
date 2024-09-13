@@ -4,6 +4,7 @@ const ColumnSchema = new Schema({
   column_name: {
     type: String,
     required: true,
+    lowercase: true
   },
   user_id: {
     type: String,

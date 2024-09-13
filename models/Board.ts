@@ -4,6 +4,7 @@ const BoardSchema = new Schema({
   board_name: {
     type: String,
     required: true,
+    lowercase: true,
   },
   user_id: {
     type: String,
