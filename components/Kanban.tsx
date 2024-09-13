@@ -8,7 +8,7 @@ async function Kanban({ boardQuery }: { boardQuery: string }) {
   const boardData = await getBoardData(boardQuery);
 
   return (
-    <main className="flex h-screen">
+    <main className="flex h-screen overflow-hidden">
       <SideBar boardTabs={boardTabs} />
       <MainBoard isSignedIn={isSignedIn} boardData={boardData} />
     </main>
