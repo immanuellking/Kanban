@@ -2,7 +2,7 @@
 import { useSearchParams } from "next/navigation";
 import React from "react";
 
-export default function BoardHeader() {
+export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const currentTab = params.get("board");
@@ -35,7 +35,10 @@ export default function BoardHeader() {
         </button>
 
         <div className="flex items-center gap-x-2">
-          <button className="flex text-white font-semibold bg-[#635FC7] py-4 px-8 rounded-full">
+          <button
+            className="flex text-white font-semibold bg-[#635FC7] py-4 px-8 rounded-full disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={!boardData.length}
+          >
             {" "}
             {/*Disale when board is empty*/}
             <svg
@@ -53,7 +56,10 @@ export default function BoardHeader() {
             Add New Task
           </button>
 
-          <button className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150">
+          <button
+            className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+            disabled={!boardData.length}
+          >
             <svg
               stroke="currentColor"
               fill="currentColor"
