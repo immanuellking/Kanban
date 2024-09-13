@@ -31,18 +31,6 @@ export async function createBoard(values: BoardType) {
 
     const columnIds = await createdColumns(values.columns, userId, board._id);
 
-    // const createdColumns = await Promise.all(
-    //   values.columns.map((column) =>
-    //     Column.create({
-    //       column_name: column.column_name,
-    //       user_id: userId,
-    //       board_id: board._id, // Set the board_id later when the board is created
-    //     })
-    //   )
-    // );
-
-    // const columnIds = createdColumns.map((column) => column._id);
-
     await Board.findByIdAndUpdate(board._id, {
       columns: columnIds,
     });
@@ -93,17 +81,6 @@ export async function addNewColumn(values: AddNewColumnType) {
     values.board_id
   );
 
-  // const createdColumns = await Promise.all(
-  //   values.columns.map((column) =>
-  //     Column.create({
-  //       column_name: column.column_name,
-  //       user_id: userId,
-  //       board_id: values.board_id,
-  //     })
-  //   )
-  // );
-  // const columnIds = createdColumns.map((column) => column._id);
-
   await Promise.all(
     columnIds.map((id) =>
       Board.findByIdAndUpdate(
@@ -127,7 +104,7 @@ async function createdColumns(
       Column.create({
         column_name: column.column_name,
         user_id: userId,
-        board_id: board_id, // Set the board_id later when the board is created
+        board_id: board_id,
       })
     )
   );
