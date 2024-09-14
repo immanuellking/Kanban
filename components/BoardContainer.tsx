@@ -1,5 +1,5 @@
 "use client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getRandomBrightColor } from "@/lib/utils";
 import AddNewColumnModal from "./AddNewColumnModal";
 import { useDialog } from "@/context/dialogContext";
@@ -12,13 +12,21 @@ export default function BoardContainer({
   isSignedIn: boolean;
   boardData: BoardData[];
 }) {
+  const searchParams = useSearchParams();
   const { push } = useRouter();
-  const { openNewColumnDialog, openDialog } = useDialog();
+  const { openNewColumnDialog, openDialog, setIsLoading } = useDialog();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams);
+    if (params.get("board") === boardData[0]?.board_name  ) {
+      setIsLoading(false);
+    }
+  }, [boardData, searchParams]);
 
   return (
     <>
