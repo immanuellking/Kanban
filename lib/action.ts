@@ -48,8 +48,6 @@ export async function createBoard(values: BoardType) {
     if (!updatedUser) {
       throw new Error("Failed to update the user with the new board.");
     }
-
-    revalidatePath("/");
   } catch (error) {
     console.error("Error creating board or updating user:", error);
     throw new Error("Failed to create board or update user.");
@@ -81,14 +79,10 @@ export async function addNewColumn(values: AddNewColumnType) {
     values.board_id
   );
 
-  await Promise.all(
-    columnIds.map((id) =>
-      Board.findByIdAndUpdate(
-        values.board_id,
-        { $push: { columns: { $each: columnIds } } },
-        { new: true }
-      )
-    )
+  await Board.findByIdAndUpdate(
+    values.board_id,
+    { $push: { columns: { $each: columnIds } } },
+    { new: true }
   );
 
   revalidatePath("/");
