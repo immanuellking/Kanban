@@ -14,6 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { createBoard, checkBoardNameExists } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
+import { useRouter } from "next/navigation";
+import { Loader } from "./Loader";
 
 async function isBoardNameUnique(name: string): Promise<boolean> {
   const exists = await checkBoardNameExists(name); // Make sure this returns a boolean
@@ -39,6 +41,8 @@ const FormSchema = z.object({
 });
 
 export function AddNewBoardForm() {
+  const router = useRouter();
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -55,16 +59,24 @@ export function AddNewBoardForm() {
     control,
   });
 
-  const { closeDialog } = useDialog();
+  const { state, closeDialog, setIsLoading } = useDialog();
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof FormSchema>) {
-    console.log(values);
-    createBoard(values);
-    closeDialog();
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
+    setIsLoading(true);
+    try {
+      await createBoard(values);
+      closeDialog();
+      router.push(`/?board=${values.board_name}`);
+      setIsLoading(false);
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Failed to create board", error);
+    }
   }
 
   return (
+    <>
     <Form {...form}>
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
         <FormField
@@ -141,6 +153,7 @@ export function AddNewBoardForm() {
         </div>
       </form>
     </Form>
+    {state.isLoading && <Loader />}
+    </>
   );
 }
-
