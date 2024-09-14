@@ -14,20 +14,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { addNewColumn } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
-
-const ColumnSchema = z.object({
-  column_name: z
-    .string()
-    .min(2, { message: "Column name must be at least 1 character" })
-    .max(50, { message: "Column name must not exceed 50 characters" }),
-});
-
-const FormSchema = z.object({
-  board_name: z.string(),
-  columns: z.array(ColumnSchema),
-});
+import { useEffect } from "react";
 
 export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
+  async function isColumnNameUnique(name: string): Promise<boolean> {
+    const boardColumns = boardData[0].columns;
+    return !boardColumns.some((column) => column.column_name === name); // Return true if column name is unique
+  }
+
+  const ColumnSchema = z.object({
+    column_name: z
+      .string()
+      .min(2, { message: "Column name must be at least 1 character" })
+      .max(50, { message: "Column name must not exceed 50 characters" })
+      .refine(async (value) => await isColumnNameUnique(value), {
+        message: "Column name already exists for this board.",
+      }),
+  });
+
+  const FormSchema = z.object({
+    board_name: z.string(),
+    columns: z.array(ColumnSchema),
+  });
+
   // 1. Define your form.
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -44,13 +53,19 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
     control,
   });
 
-  const { closeNewColumnDialog } = useDialog();
+  const { closeNewColumnDialog, setIsLoading } = useDialog();
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof FormSchema>) {
+  async function onSubmit(values: z.infer<typeof FormSchema>) {
     const updatedVal = { board_id: boardData[0].board_id, ...values };
-    addNewColumn(updatedVal);
-    closeNewColumnDialog();
+    try {
+      setIsLoading(true);
+      await addNewColumn(updatedVal);
+      closeNewColumnDialog();
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Failed to create column(s)", error);
+    }
   }
 
   //   const boardNameRef = useRef<HTMLInputElement>(null);
@@ -64,6 +79,10 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
   //       );
   //     }
   //   }, [state.isAddNewColumnOpen]);
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [boardData[0].columns]);
 
   return (
     <Form {...form}>
