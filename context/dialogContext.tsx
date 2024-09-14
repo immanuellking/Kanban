@@ -4,17 +4,20 @@ import { createContext, ReactNode, useContext, useReducer } from "react";
 type StateType = {
   isOpen: boolean;
   isAddNewColumnOpen: boolean;
+  isLoading: boolean;
 };
 
 type ActionType =
   | { type: "OPEN_DIALOG" }
   | { type: "CLOSE_DIALOG" }
   | { type: "OPEN_NEW_COLUMN_DIALOG" }
-  | { type: "CLOSE_NEW_COLUMN_DIALOG" };
+  | { type: "CLOSE_NEW_COLUMN_DIALOG" }
+  | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
 
 const initialState: StateType = {
   isOpen: false,
   isAddNewColumnOpen: false,
+  isLoading: false,
 };
 
 const DialogContext = createContext<{
@@ -24,6 +27,7 @@ const DialogContext = createContext<{
   closeDialog: () => void;
   openNewColumnDialog: () => void;
   closeNewColumnDialog: () => void;
+  setIsLoading: (value: boolean) => void;
 }>({
   state: initialState,
   dispatch: () => null,
@@ -31,6 +35,7 @@ const DialogContext = createContext<{
   closeDialog: () => {},
   openNewColumnDialog: () => {},
   closeNewColumnDialog: () => {},
+  setIsLoading: () => {},
 });
 
 const reducer = (state: StateType, action: ActionType) => {
@@ -46,6 +51,9 @@ const reducer = (state: StateType, action: ActionType) => {
 
     case "CLOSE_NEW_COLUMN_DIALOG":
       return { ...state, isAddNewColumnOpen: false };
+
+    case "TOGGLE_LOADING_STATE":
+      return {...state, isLoading: action.payload}
 
     default:
       return state;
@@ -71,6 +79,10 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_NEW_COLUMN_DIALOG" });
   };
 
+  const setIsLoading = (value: boolean) => {
+    dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
+  };
+
   return (
     <DialogContext.Provider
       value={{
@@ -80,6 +92,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         closeDialog,
         closeNewColumnDialog,
         openNewColumnDialog,
+        setIsLoading,
       }}
     >
       {children}
