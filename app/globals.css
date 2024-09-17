@@ -102,7 +102,7 @@
     scrollbar-width: none; /* Firefox */
   }
 
-  /* .container-scrollbar::-webkit-scrollbar {
+  .container-scrollbar::-webkit-scrollbar {
     width: 1px;
   }
 
@@ -119,5 +119,5 @@
   .container-scrollbar {
     scrollbar-width: thin;
     scrollbar-color: #635fc7 transparent;
-  } */
+  }
 }
