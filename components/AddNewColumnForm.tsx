@@ -25,7 +25,7 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
   const ColumnSchema = z.object({
     column_name: z
       .string()
-      .min(2, { message: "Column name must be at least 1 character" })
+      .min(2, { message: "Column name must be at least 2 characters" })
       .max(50, { message: "Column name must not exceed 50 characters" })
       .refine(async (value) => await isColumnNameUnique(value), {
         message: "Column name already exists for this board.",
