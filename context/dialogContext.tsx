@@ -5,6 +5,7 @@ type StateType = {
   isOpen: boolean;
   isAddNewColumnOpen: boolean;
   isLoading: boolean;
+  isAddNewTaskOpen: boolean;
 };
 
 type ActionType =
@@ -12,12 +13,15 @@ type ActionType =
   | { type: "CLOSE_DIALOG" }
   | { type: "OPEN_NEW_COLUMN_DIALOG" }
   | { type: "CLOSE_NEW_COLUMN_DIALOG" }
+  | { type: "OPEN_NEW_TASK_DIALOG" }
+  | { type: "CLOSE_NEW_TASK_DIALOG" }
   | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
 
 const initialState: StateType = {
   isOpen: false,
   isAddNewColumnOpen: false,
   isLoading: false,
+  isAddNewTaskOpen: false,
 };
 
 const DialogContext = createContext<{
@@ -27,6 +31,8 @@ const DialogContext = createContext<{
   closeDialog: () => void;
   openNewColumnDialog: () => void;
   closeNewColumnDialog: () => void;
+  openNewTaskDialog: () => void;
+  closeNewTaskDialog: () => void;
   setIsLoading: (value: boolean) => void;
 }>({
   state: initialState,
@@ -35,6 +41,8 @@ const DialogContext = createContext<{
   closeDialog: () => {},
   openNewColumnDialog: () => {},
   closeNewColumnDialog: () => {},
+  openNewTaskDialog: () => {},
+  closeNewTaskDialog: () => {},
   setIsLoading: () => {},
 });
 
@@ -52,8 +60,14 @@ const reducer = (state: StateType, action: ActionType) => {
     case "CLOSE_NEW_COLUMN_DIALOG":
       return { ...state, isAddNewColumnOpen: false };
 
+    case "OPEN_NEW_TASK_DIALOG":
+      return { ...state, isAddNewTaskOpen: true };
+
+    case "CLOSE_NEW_TASK_DIALOG":
+      return { ...state, isAddNewTaskOpen: false };
+
     case "TOGGLE_LOADING_STATE":
-      return {...state, isLoading: action.payload}
+      return { ...state, isLoading: action.payload };
 
     default:
       return state;
@@ -79,6 +93,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_NEW_COLUMN_DIALOG" });
   };
 
+  const openNewTaskDialog = () => {
+    dispatch({ type: "OPEN_NEW_TASK_DIALOG" });
+  };
+
+  const closeNewTaskDialog = () => {
+    dispatch({ type: "CLOSE_NEW_TASK_DIALOG" });
+  };
+
   const setIsLoading = (value: boolean) => {
     dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
   };
@@ -92,6 +114,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         closeDialog,
         closeNewColumnDialog,
         openNewColumnDialog,
+        closeNewTaskDialog,
+        openNewTaskDialog,
         setIsLoading,
       }}
     >
