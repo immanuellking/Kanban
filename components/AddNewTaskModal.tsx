@@ -11,11 +11,7 @@ import { useDialog } from "@/context/dialogContext";
 import { AddNewColumnForm } from "./AddNewColumnForm";
 import AddNewTaskForm from "./AddNewTaskForm";
 
-export default function AddNewTaskModal({
-  columnNames,
-}: {
-  columnNames: string[];
-}) {
+export default function AddNewTaskModal({ columns }: { columns: Column[] }) {
   const { state, closeNewTaskDialog } = useDialog();
   return (
     <Dialog
@@ -24,13 +20,17 @@ export default function AddNewTaskModal({
       modal
       defaultOpen={state.isAddNewTaskOpen}
     >
-      <DialogContent className="bg-[#2B2C37] border-none h-[30rem]"  aria-description="">
+      <DialogContent
+        className="bg-[#2B2C37] border-none h-[30rem]"
+        hideCloseButton={true}
+        aria-description=""
+      >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">Add New Task</DialogTitle>
           <DialogDescription />
         </DialogHeader>
         <div className="overflow-auto container-scrollbar">
-          <AddNewTaskForm columnNames={columnNames} />
+          <AddNewTaskForm columns={columns} />
         </div>
       </DialogContent>
     </Dialog>
