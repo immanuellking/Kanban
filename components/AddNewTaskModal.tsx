@@ -6,9 +6,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AddNewBoardForm } from "./AddNewBoardForm";
 import { useDialog } from "@/context/dialogContext";
-import { AddNewColumnForm } from "./AddNewColumnForm";
 import AddNewTaskForm from "./AddNewTaskForm";
 
 export default function AddNewTaskModal({ columns }: { columns: Column[] }) {
