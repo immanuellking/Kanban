@@ -91,9 +91,19 @@ export async function getBoardData(query: string) {
     const boardRawData = await Board.where("board_name")
       .equals(`${query}`)
       .select("board_name columns")
-      .populate("columns");
+      .populate({
+        path: "columns", // Populate columns
+        populate: {
+          path: "tasks", // Populate tasks within each column
+          model: "Task",
+          populate: {
+            path: "subTasks",
+            model: "SubTask",
+          }, // Ensure the 'Task' model is correctly specified
+        },
+      });
 
-    // console.log("Board RAW DATA", boardRawData);
+    // console.log("Board RAW DATA", boardRawData[0].columns[0].tasks[0]);
 
     if (boardRawData.length > 0 && boardRawData[0].columns) {
       const boardData = boardRawData.map((board) => ({
@@ -103,10 +113,20 @@ export async function getBoardData(query: string) {
           // Map through the columns as needed
           _id: column._id.toString(),
           column_name: column.column_name,
-        }))
+          tasks: column?.tasks.map((task: any) => ({
+            _id: task._id.toString(),
+            title: task.title,
+            description: task.description,
+            subTasks: task.subTasks.map((subtask: any) => ({
+              _id: subtask._id.toString(),
+              subtask: subtask.subtask,
+              is_complete: subtask.is_complete,
+            })),
+          })),
+        })),
       }));
 
-      // console.log("Mapped Board Data:", boardData[0].columns);
+      // console.log("Mapped Board Data:", boardData[0].columns[0].tasks);
       return boardData;
     } else {
       console.log("No columns found for the given board.");
