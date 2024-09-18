@@ -18,7 +18,11 @@ export default function CreateNewBoardModal() {
       modal
       defaultOpen={state.isOpen}
     >
-      <DialogContent className="bg-[#2B2C37] border-none" aria-description="">
+      <DialogContent
+        className="bg-[#2B2C37] border-none"
+        hideCloseButton={true}
+        aria-description=""
+      >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">
             Add New Board
