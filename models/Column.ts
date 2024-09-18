@@ -1,10 +1,10 @@
-import { Schema, models, model } from "mongoose";
+import { Schema, SchemaTypes, models, model } from "mongoose";
 
 const ColumnSchema = new Schema({
   column_name: {
     type: String,
     required: true,
-    lowercase: true
+    lowercase: true,
   },
   user_id: {
     type: String,
@@ -15,6 +15,12 @@ const ColumnSchema = new Schema({
     ref: "Board",
     // required: true,
   },
+  tasks: [
+    {
+      type: SchemaTypes.ObjectId,
+      ref: "Task",
+    },
+  ],
 });
 
 export default models.Column || model("Column", ColumnSchema);
