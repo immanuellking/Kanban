@@ -11,7 +11,7 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
 
   const { openNewTaskDialog } = useDialog();
 
-  const columnNames = boardData[0].columns.map((column) => column.column_name);
+  const columns = boardData[0]?.columns;
 
   return (
     <>
@@ -84,7 +84,7 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
           </div>
         </div>
       </div>
-      <AddNewTaskModal columnNames={columnNames} />
+      <AddNewTaskModal columns={columns} />
     </>
   );
 }
