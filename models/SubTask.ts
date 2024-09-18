@@ -1,7 +1,7 @@
 import { Schema, models, model } from "mongoose";
 
 const SubTaskSchema = new Schema({
-  sub_task: {
+  subtask: {
     type: String,
     lowercase: true,
   },
