@@ -5,6 +5,8 @@ import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
 import { unstable_noStore as noStore } from "next/cache";
 import Column from "@/models/Column";
+import Task from "@/models/Task";
+import SubTask from "@/models/SubTask";
 
 type BoardType = {
   board_name: string;
@@ -14,6 +16,18 @@ type BoardType = {
 interface AddNewColumnType extends BoardType {
   board_id: string;
 }
+
+type Subtask = {
+  subtask_name: string;
+};
+
+type TaskType = {
+  column_id: string;
+  title: string;
+  description: string;
+  status: string;
+  subtasks: Subtask[] | [];
+};
 
 export async function createBoard(values: BoardType) {
   noStore();
@@ -99,6 +113,7 @@ async function createdColumns(
         column_name: column.column_name,
         user_id: userId,
         board_id: board_id,
+        tasks: [],
       })
     )
   );
@@ -106,4 +121,45 @@ async function createdColumns(
   const columnIds = createdColumns.map((column) => column._id);
 
   return columnIds;
+}
+
+export async function addNewTask(values: TaskType) {
+  const task = await Task.create({
+    column_name: values.status,
+    column_id: values.column_id,
+    title: values.title,
+    description: values.description,
+  });
+
+  // console.log("Checking task info", task);
+
+  const columnUpdate = await Column.findOneAndUpdate(
+    { _id: values.column_id },
+    { $push: { tasks: task._id } },
+    { new: true }
+  );
+
+  // console.log("Updated Column", columnUpdate);
+
+  const subtaskIds = await createdSubtasks(values.subtasks, task._id);
+
+  await Task.findByIdAndUpdate(task._id, { subTasks: subtaskIds });
+
+  revalidatePath("/");
+}
+
+async function createdSubtasks(
+  subtasks: { subtask_name: string }[],
+  task_id: string
+) {
+  const createdSubtasks = await Promise.all(
+    subtasks.map((subtask) =>
+      SubTask.create({
+        subtask: subtask.subtask_name,
+        task_id: task_id,
+      })
+    )
+  );
+  const subtaskIds = createdSubtasks.map((subtask) => subtask._id);
+  return subtaskIds;
 }
