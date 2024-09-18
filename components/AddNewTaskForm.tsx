@@ -21,19 +21,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDialog } from "@/context/dialogContext";
+import { addNewTask } from "@/lib/action";
 
-export default function AddNewTaskForm({
-  columnNames,
-}: {
-  columnNames: string[];
-}) {
+export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
+  const { setIsLoading, closeNewTaskDialog } = useDialog();
+
   const SubTaskSchema = z.object({
-    subtask_name: z
-      .string()
-      .min(2, {
-        message: "Task Description must be atleast 5 letter characters",
-      })
-      .optional(),
+    subtask_name: z.string().min(2, {
+      message: "Task Description must be atleast 5 letter characters",
+    }),
   });
 
   const FormSchema = z.object({
@@ -54,7 +50,7 @@ export default function AddNewTaskForm({
       title: "",
       description: "",
       subtasks: [{ subtask_name: "" }],
-      status: columnNames[0],
+      status: columns[0].column_name,
     },
   });
 
@@ -65,7 +61,24 @@ export default function AddNewTaskForm({
     control,
   });
 
-  const onSubmit = () => {};
+  const onSubmit = async (values: z.infer<typeof FormSchema>) => {
+    const column = columns.find(
+      (column) => column.column_name === values.status
+    );
+    if (!column) {
+      throw new Error("Column not found");
+    }
+
+    try {
+      setIsLoading(true);
+      const updatedColumnVal = { column_id: column?._id, ...values };
+      await addNewTask(updatedColumnVal);
+      closeNewTaskDialog();
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Failed to create Tasks", error);
+    }
+  };
 
   return (
     <Form {...form}>
@@ -108,7 +121,7 @@ export default function AddNewTaskForm({
         <div className="space-y-3">
           <div className="space-y-2">
             {fields.length > 0 && (
-              <FormLabel className="text-white">Board Columns</FormLabel>
+              <FormLabel className="text-white">Subtasks</FormLabel>
             )}
             {fields.map((field, idx) => (
               <FormField
@@ -168,13 +181,14 @@ export default function AddNewTaskForm({
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-[#2B2C37] border-[#2B2C37]">
-                  {columnNames.map((column_name) => {
+                  {columns.map((column, idx) => {
                     return (
                       <SelectItem
-                        value={column_name}
+                        value={column.column_name}
+                        key={idx}
                         className="text-white hover:bg-[#635FC7] focus:bg-[#635FC7] focus:text-white"
                       >
-                        {column_name}
+                        {column.column_name}
                       </SelectItem>
                     );
                   })}
