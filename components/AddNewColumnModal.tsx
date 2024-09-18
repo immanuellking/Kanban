@@ -6,7 +6,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { AddNewBoardForm } from "./AddNewBoardForm";
 import { useDialog } from "@/context/dialogContext";
 import { AddNewColumnForm } from "./AddNewColumnForm";
 
@@ -23,7 +22,11 @@ export default function AddNewColumnModal({
       modal
       defaultOpen={state.isAddNewColumnOpen}
     >
-      <DialogContent className="bg-[#2B2C37] border-none" aria-description="">
+      <DialogContent
+        className="bg-[#2B2C37] border-none"
+        hideCloseButton={true}
+        aria-description="add new column"
+      >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">
             Add New Column
@@ -31,7 +34,7 @@ export default function AddNewColumnModal({
           <DialogDescription />
         </DialogHeader>
         <div>
-          <AddNewColumnForm boardData={boardData}/>
+          <AddNewColumnForm boardData={boardData} />
         </div>
       </DialogContent>
     </Dialog>
