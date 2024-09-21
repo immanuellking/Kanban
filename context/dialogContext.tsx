@@ -6,6 +6,8 @@ type StateType = {
   isAddNewColumnOpen: boolean;
   isLoading: boolean;
   isAddNewTaskOpen: boolean;
+  viewTaskOpen: boolean;
+  task: Task | null;
 };
 
 type ActionType =
@@ -15,6 +17,8 @@ type ActionType =
   | { type: "CLOSE_NEW_COLUMN_DIALOG" }
   | { type: "OPEN_NEW_TASK_DIALOG" }
   | { type: "CLOSE_NEW_TASK_DIALOG" }
+  | { type: "OPEN_VIEW_TASK_DIALOG"; payload: Task }
+  | { type: "CLOSE_VIEW_TASK_DIALOG" }
   | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
 
 const initialState: StateType = {
@@ -22,6 +26,8 @@ const initialState: StateType = {
   isAddNewColumnOpen: false,
   isLoading: false,
   isAddNewTaskOpen: false,
+  viewTaskOpen: false,
+  task: null,
 };
 
 const DialogContext = createContext<{
@@ -33,6 +39,8 @@ const DialogContext = createContext<{
   closeNewColumnDialog: () => void;
   openNewTaskDialog: () => void;
   closeNewTaskDialog: () => void;
+  openViewTaskDialog: (task: Task) => void;
+  closeViewTaskDialog: () => void;
   setIsLoading: (value: boolean) => void;
 }>({
   state: initialState,
@@ -43,6 +51,8 @@ const DialogContext = createContext<{
   closeNewColumnDialog: () => {},
   openNewTaskDialog: () => {},
   closeNewTaskDialog: () => {},
+  openViewTaskDialog: () => {},
+  closeViewTaskDialog: () => {},
   setIsLoading: () => {},
 });
 
@@ -65,6 +75,12 @@ const reducer = (state: StateType, action: ActionType) => {
 
     case "CLOSE_NEW_TASK_DIALOG":
       return { ...state, isAddNewTaskOpen: false };
+
+    case "OPEN_VIEW_TASK_DIALOG":
+      return { ...state, viewTaskOpen: true, task: action.payload };
+
+    case "CLOSE_VIEW_TASK_DIALOG":
+      return { ...state, viewTaskOpen: false, };
 
     case "TOGGLE_LOADING_STATE":
       return { ...state, isLoading: action.payload };
@@ -101,6 +117,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_NEW_TASK_DIALOG" });
   };
 
+  const openViewTaskDialog = (task: Task) => {
+    dispatch({ type: "OPEN_VIEW_TASK_DIALOG", payload: task });
+  };
+
+  const closeViewTaskDialog = () => {
+    dispatch({ type: "CLOSE_VIEW_TASK_DIALOG" });
+  };
+
   const setIsLoading = (value: boolean) => {
     dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
   };
@@ -116,6 +140,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         openNewColumnDialog,
         closeNewTaskDialog,
         openNewTaskDialog,
+        closeViewTaskDialog,
+        openViewTaskDialog,
         setIsLoading,
       }}
     >
@@ -128,7 +154,7 @@ export function useDialog() {
   const context = useContext(DialogContext);
 
   if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider");
+    throw new Error("useDialog must be used within a Dialog Provider");
   }
 
   return context;
