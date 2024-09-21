@@ -4,6 +4,7 @@ import "./globals.css";
 import { poppins } from "@/components/font";
 import { DialogProvider } from "@/context/dialogContext";
 import CreateNewBoardModal from "@/components/CreateNewBoardModal";
+import TaskViewModal from "@/components/TaskViewModal";
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,6 +22,7 @@ export default function RootLayout({
         <html lang="en">
           <body className={poppins.className}>
             {children}
+            <TaskViewModal />
             <CreateNewBoardModal />
           </body>
         </html>
