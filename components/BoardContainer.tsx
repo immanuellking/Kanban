@@ -7,7 +7,6 @@ import { useEffect, useState } from "react";
 import EmptyBoard from "./EmptyBoard";
 import LoginNow from "./LoginNow";
 import AddNewColumnButton from "./AddNewColumnButton";
-import ColumnTask from "./ColumnTask";
 import ColumnTasks from "./ColumnTasks";
 
 export default function BoardContainer({
@@ -18,8 +17,7 @@ export default function BoardContainer({
   boardData: BoardData[];
 }) {
   const searchParams = useSearchParams();
-  const { push } = useRouter();
-  const { openNewColumnDialog, openDialog, setIsLoading } = useDialog();
+  const { setIsLoading } = useDialog();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -44,7 +42,10 @@ export default function BoardContainer({
               <div className="h-full pt-6 pb-4 px-6 flex gap-4">
                 {boardData[0]?.columns.length > 0
                   ? boardData[0]?.columns.map((column) => (
-                      <div key={column._id} className="h-full w-[18rem] space-y-6">
+                      <div
+                        key={column._id}
+                        className="h-full w-[18rem] space-y-6"
+                      >
                         <div className="flex items-center gap-x-2">
                           {isClient && (
                             <div
