@@ -12,6 +12,7 @@ type SubTask = {
 type Task = {
   _id: string;
   title: string;
+  column_name: string,
   description: string;
   subTasks: SubTask[];
 };
