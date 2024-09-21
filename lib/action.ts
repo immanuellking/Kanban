@@ -72,7 +72,7 @@ export async function checkBoardNameExists(name: string): Promise<boolean> {
   try {
     // Assuming this is a database call; ensure it returns a document or null
     const result = await Board.findOne({ board_name: name });
-    console.log("Does board name exist?", result);
+    // console.log("Does board name exist?", result);
     return !!result; // Return true if the result exists, false otherwise
   } catch (error) {
     console.error("Error checking board name existence:", error);
@@ -162,4 +162,12 @@ async function createdSubtasks(
   );
   const subtaskIds = createdSubtasks.map((subtask) => subtask._id);
   return subtaskIds;
+}
+
+export async function handleSubtaskIsCompleted(value: boolean, id: string) {
+  console.log("Check box status", value);
+  const checked = await SubTask.findByIdAndUpdate(id, { is_complete: value });
+
+
+  revalidatePath("/")
 }
