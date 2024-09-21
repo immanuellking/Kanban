@@ -117,6 +117,7 @@ export async function getBoardData(query: string) {
             _id: task._id.toString(),
             title: task.title,
             description: task.description,
+            column_name: task.column_name,
             subTasks: task.subTasks.map((subtask: any) => ({
               _id: subtask._id.toString(),
               subtask: subtask.subtask,
@@ -126,7 +127,8 @@ export async function getBoardData(query: string) {
         })),
       }));
 
-      // console.log("Mapped Board Data:", boardData[0].columns[0].tasks);
+      // console.log("Mapped Board Data Columns:", boardData[0].columns[0]);
+      // console.log("Mapped Board Data Tasks:", boardData[0].columns[0].tasks);
       return boardData;
     } else {
       console.log("No columns found for the given board.");
