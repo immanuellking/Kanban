@@ -1,7 +1,5 @@
 "use client";
-
 import { useDialog } from "@/context/dialogContext";
-import TaskViewModal from "./TaskViewModal";
 
 export default function Task({ task }: { task: Task }) {
   const { openViewTaskDialog } = useDialog();
