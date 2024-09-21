@@ -1,11 +1,10 @@
+import Task from "./Task";
 
-import ColumnTask from "./ColumnTask";
-
-export default function ColumnTasks({tasks} : {tasks: Task[]}) {
+export default function ColumnTasks({ tasks }: { tasks: Task[] }) {
   return (
-    <div>
+    <div className="space-y-4">
       {tasks.map((task) => (
-        <ColumnTask key={task._id} task={task} />
+        <Task key={task._id} task={task} />
       ))}
     </div>
   );
