@@ -1,25 +1,6 @@
 "use client";
 import { createContext, ReactNode, useContext, useReducer } from "react";
-
-type StateType = {
-  isOpen: boolean;
-  isAddNewColumnOpen: boolean;
-  isLoading: boolean;
-  isAddNewTaskOpen: boolean;
-  viewTaskOpen: boolean;
-  task: Task | null;
-};
-
-type ActionType =
-  | { type: "OPEN_DIALOG" }
-  | { type: "CLOSE_DIALOG" }
-  | { type: "OPEN_NEW_COLUMN_DIALOG" }
-  | { type: "CLOSE_NEW_COLUMN_DIALOG" }
-  | { type: "OPEN_NEW_TASK_DIALOG" }
-  | { type: "CLOSE_NEW_TASK_DIALOG" }
-  | { type: "OPEN_VIEW_TASK_DIALOG"; payload: Task }
-  | { type: "CLOSE_VIEW_TASK_DIALOG" }
-  | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
+import { reducer } from "./reducer";
 
 const initialState: StateType = {
   isOpen: false,
@@ -27,6 +8,7 @@ const initialState: StateType = {
   isLoading: false,
   isAddNewTaskOpen: false,
   viewTaskOpen: false,
+  isEditingTask: false,
   task: null,
 };
 
@@ -37,7 +19,7 @@ const DialogContext = createContext<{
   closeDialog: () => void;
   openNewColumnDialog: () => void;
   closeNewColumnDialog: () => void;
-  openNewTaskDialog: () => void;
+  openNewTaskDialog: (isEdit: boolean) => void;
   closeNewTaskDialog: () => void;
   openViewTaskDialog: (task: Task) => void;
   closeViewTaskDialog: () => void;
@@ -55,40 +37,6 @@ const DialogContext = createContext<{
   closeViewTaskDialog: () => {},
   setIsLoading: () => {},
 });
-
-const reducer = (state: StateType, action: ActionType) => {
-  switch (action.type) {
-    case "OPEN_DIALOG":
-      return { ...state, isOpen: true };
-
-    case "CLOSE_DIALOG":
-      return { ...state, isOpen: false };
-
-    case "OPEN_NEW_COLUMN_DIALOG":
-      return { ...state, isAddNewColumnOpen: true };
-
-    case "CLOSE_NEW_COLUMN_DIALOG":
-      return { ...state, isAddNewColumnOpen: false };
-
-    case "OPEN_NEW_TASK_DIALOG":
-      return { ...state, isAddNewTaskOpen: true };
-
-    case "CLOSE_NEW_TASK_DIALOG":
-      return { ...state, isAddNewTaskOpen: false };
-
-    case "OPEN_VIEW_TASK_DIALOG":
-      return { ...state, viewTaskOpen: true, task: action.payload };
-
-    case "CLOSE_VIEW_TASK_DIALOG":
-      return { ...state, viewTaskOpen: false, };
-
-    case "TOGGLE_LOADING_STATE":
-      return { ...state, isLoading: action.payload };
-
-    default:
-      return state;
-  }
-};
 
 export function DialogProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -109,8 +57,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_NEW_COLUMN_DIALOG" });
   };
 
-  const openNewTaskDialog = () => {
-    dispatch({ type: "OPEN_NEW_TASK_DIALOG" });
+  const openNewTaskDialog = (isEdit: boolean) => {
+    dispatch({ type: "OPEN_NEW_TASK_DIALOG", payload: isEdit });
   };
 
   const closeNewTaskDialog = () => {
