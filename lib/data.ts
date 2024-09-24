@@ -118,6 +118,7 @@ export async function getBoardData(query: string) {
             title: task.title,
             description: task.description,
             column_name: task.column_name,
+            column_id: task.column_id.toString(),
             subTasks: task.subTasks.map((subtask: any) => ({
               _id: subtask._id.toString(),
               subtask: subtask.subtask,
