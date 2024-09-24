@@ -21,40 +21,77 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useDialog } from "@/context/dialogContext";
-import { addNewTask } from "@/lib/action";
+import { addNewTask, editTask } from "@/lib/action";
+import { useEffect, useRef, useState } from "react";
 
 export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
-  const { setIsLoading, closeNewTaskDialog } = useDialog();
+  const { state, setIsLoading, closeNewTaskDialog } = useDialog();
+  const [subTasksError, setSubTasksError] = useState<string>("");
+
+  const editValues = {
+    title: state.task ? state.task.title : "",
+    description: state.task ? state.task.description : "",
+    subtasks: state.task
+      ? state.task.subTasks.map((sub) => ({
+          subtask_name: sub.subtask,
+          _id: sub._id,
+          is_complete: sub.is_complete,
+        }))
+      : [{ subtask_name: "" }],
+    status: state.task ? state.task.column_name : "",
+  };
 
   const SubTaskSchema = z.object({
-    subtask_name: z.string().min(2, {
-      message: "Task Description must be atleast 5 letter characters",
+    subtask_name: z.string().min(3, {
+      message: "subtask must be atleast 3 letter characters",
     }),
+    _id: z.string(),
+    is_complete: z.boolean(),
   });
 
   const FormSchema = z.object({
     title: z
       .string()
-      .min(2, {
-        message: "Task title name must be atleast 2 letter characters",
+      .min(3, {
+        message: "Task title name must be atleast 3 letter characters",
       })
       .max(50, { message: "Task title name must not exceed 50 characters" }),
     description: z.string(),
-    subtasks: z.array(SubTaskSchema),
+    subtasks: z.array(SubTaskSchema).refine(
+      (subtasks) => {
+        const subtaskNames = subtasks.map((subtask) =>
+          subtask.subtask_name.toLowerCase()
+        );
+        const uniqueNames = new Set(subtaskNames);
+        const result = subtaskNames.length === uniqueNames.size;
+        if (!result) {
+          setSubTasksError("Duplicate subtask titles are not allowed");
+        } else {
+          setSubTasksError("");
+        }
+        return result; // Ensure all names are unique
+      },
+      {
+        message: "Subtask names must be unique.",
+      }
+    ),
     status: z.string({ required_error: "Please select a board." }),
   });
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      subtasks: [{ subtask_name: "" }],
-      status: columns[0].column_name,
-    },
+    defaultValues: !state.isEditingTask
+      ? {
+          title: "",
+          description: "",
+          subtasks: [{ subtask_name: "", _id: "", is_complete: false }],
+          status: columns[0].column_name,
+        }
+      : editValues,
   });
 
-  const { handleSubmit, control } = form;
+  const { handleSubmit, control, formState } = form;
+  const { errors } = formState;
 
   const { fields, append, remove } = useFieldArray({
     name: "subtasks",
@@ -69,16 +106,43 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
       throw new Error("Column not found");
     }
 
-    try {
-      setIsLoading(true);
-      const updatedColumnVal = { column_id: column?._id, ...values };
-      await addNewTask(updatedColumnVal);
-      closeNewTaskDialog();
-    } catch (error) {
-      setIsLoading(false);
-      console.log("Failed to create Tasks", error);
+    const updatedColumnVal = { column_id: column?._id, ...values };
+
+    if (!state.isEditingTask) {
+      try {
+        setIsLoading(true);
+        await addNewTask(updatedColumnVal);
+        closeNewTaskDialog();
+      } catch (error) {
+        setIsLoading(false);
+        console.log("Failed to create Task", error);
+      }
+    } else {
+      if (state.task) {
+        try {
+          setIsLoading(true);
+          console.log("Working!!!!!!");
+          await editTask(updatedColumnVal, state.task);
+          closeNewTaskDialog();
+        } catch (error) {
+          setIsLoading(false);
+          console.log("Failed to edit Task", error);
+        }
+      }
     }
   };
+
+  const titleRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (titleRef.current) {
+      titleRef.current.focus();
+      titleRef.current.setSelectionRange(
+        titleRef.current.value.length,
+        titleRef.current.value.length
+      );
+    }
+  }, []);
 
   return (
     <Form {...form}>
@@ -94,6 +158,7 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
                   placeholder="Enter task title here"
                   className="bg-transparent placeholder:text-base text-base text-white border-[1px] border-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-[#726fdb] hover:border-[#726fdb]"
                   {...field}
+                  ref={titleRef}
                 />
               </FormControl>
               <FormMessage />
@@ -160,12 +225,15 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
               />
             ))}
           </div>
+          <p className="text-sm text-red-500">{subTasksError}</p>
           <Button
             type="button"
-            onClick={() => append({ subtask_name: "" })}
+            onClick={() =>
+              append({ subtask_name: "", _id: "", is_complete: false })
+            }
             className="w-full rounded-full text-[#635FC7] hover:text-white bg-white hover:bg-[#adace1] transition-all ease-in duration-150"
           >
-            + Add Column
+            + Add Subtask
           </Button>
         </div>
         <FormField
