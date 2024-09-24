@@ -3,10 +3,10 @@ import Board from "@/models/Board";
 import User from "@/models/User";
 import { revalidatePath } from "next/cache";
 import { auth } from "@clerk/nextjs/server";
-import { unstable_noStore as noStore } from "next/cache";
 import Column from "@/models/Column";
 import Task from "@/models/Task";
 import SubTask from "@/models/SubTask";
+import mongoose from "mongoose";
 
 type BoardType = {
   board_name: string;
@@ -32,7 +32,6 @@ type TaskType = {
 };
 
 export async function createBoard(values: BoardType) {
-  noStore();
   const { userId } = auth();
 
   if (!userId) {
@@ -89,31 +88,41 @@ export async function addNewColumn(values: AddNewColumnType) {
     throw new Error("User is not authenticated.");
   }
 
-  const columnIds = await createdColumns(
-    values.columns,
-    userId,
-    values.board_id
-  );
+  try {
+    const columnIds = await createdColumns(
+      values.columns,
+      userId,
+      values.board_id
+    );
 
-  await Board.findByIdAndUpdate(
-    values.board_id,
-    { $push: { columns: { $each: columnIds } } },
-    { new: true }
-  );
+    await Board.findByIdAndUpdate(
+      values.board_id,
+      { $push: { columns: { $each: columnIds } } },
+      { new: true }
+    );
 
-  revalidatePath("/");
+    revalidatePath("/");
+  } catch (error) {
+    console.log("Error Adding Column(s)", error);
+  }
 }
 
 async function createdColumns(
   columns: { column_name: string }[],
-  userId: string,
+  user_id: string,
   board_id: string
 ) {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
   const createdColumns = await Promise.all(
     columns.map((column) =>
       Column.create({
         column_name: column.column_name,
-        user_id: userId,
+        user_id: user_id,
         board_id: board_id,
         tasks: [],
       })
@@ -126,28 +135,34 @@ async function createdColumns(
 }
 
 export async function addNewTask(values: TaskType) {
-  const task = await Task.create({
-    column_name: values.status,
-    column_id: values.column_id,
-    title: values.title,
-    description: values.description,
-  });
+  const { userId } = auth();
 
-  // console.log("Checking task info", task);
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
 
-  const columnUpdate = await Column.findOneAndUpdate(
-    { _id: values.column_id },
-    { $push: { tasks: task._id } },
-    { new: true }
-  );
+  try {
+    const task = await Task.create({
+      column_name: values.status,
+      column_id: values.column_id,
+      title: values.title,
+      description: values.description,
+    });
 
-  // console.log("Updated Column", columnUpdate);
+    await Column.findOneAndUpdate(
+      { _id: values.column_id },
+      { $push: { tasks: task._id } },
+      { new: true }
+    );
 
-  const subtaskIds = await createdSubtasks(values.subtasks, task._id);
+    const subtaskIds = await createdSubtasks(values.subtasks, task._id);
 
-  await Task.findByIdAndUpdate(task._id, { subTasks: subtaskIds });
+    await Task.findByIdAndUpdate(task._id, { subTasks: subtaskIds });
 
-  revalidatePath("/");
+    revalidatePath("/");
+  } catch (error) {
+    console.log("Error Adding New Task", error);
+  }
 }
 
 async function createdSubtasks(
@@ -167,14 +182,29 @@ async function createdSubtasks(
 }
 
 export async function handleSubtaskIsCompleted(value: boolean, id: string) {
-  console.log("Check box status", value);
-  const checked = await SubTask.findByIdAndUpdate(id, { is_complete: value });
+  const { userId } = auth();
 
-  revalidatePath("/");
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
+  try {
+    console.log("Check box status", value);
+    await SubTask.findByIdAndUpdate(id, { is_complete: value });
+
+    revalidatePath("/");
+  } catch (error) {
+    console.log("Error checking/unchecking subtask", error)
+  }
 }
 
-
 export const editTask = async (values: TaskType, prevVal: Task) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
   const taskId = prevVal._id;
   const columnChanged = values.column_id !== prevVal.column_id;
 
@@ -273,4 +303,33 @@ export const editTask = async (values: TaskType, prevVal: Task) => {
   }
 
   revalidatePath("/");
+};
+
+export const deleteTask = async (task_id: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
+  try {
+    const task = await Task.findById(task_id);
+
+    await Column.findByIdAndUpdate(task.column_id, {
+      $pull: { tasks: task_id },
+    });
+
+    await Promise.all(
+      task.subTasks.map(async (subtask: mongoose.Types.ObjectId) => {
+        await SubTask.findByIdAndDelete(subtask);
+      })
+    );
+
+    await Task.findByIdAndDelete(task._id);
+
+    console.log(task);
+    revalidatePath("/");
+  } catch (error) {
+    console.error("Error deleting task:", error);
+  }
 };
