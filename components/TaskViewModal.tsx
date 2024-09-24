@@ -16,11 +16,17 @@ import {
 import { useDialog } from "@/context/dialogContext";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import { handleSubtaskIsCompleted } from "@/lib/action";
+import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
+import { capitalizeFirstLetter } from "@/lib/utils";
 
 export default function TaskViewModal() {
-  const { state, closeViewTaskDialog, openViewTaskDialog, openNewTaskDialog } =
-    useDialog();
+  const {
+    state,
+    closeViewTaskDialog,
+    openViewTaskDialog,
+    openNewTaskDialog,
+    setIsLoading,
+  } = useDialog();
 
   const done = state.task?.subTasks.reduce(
     (acc, curr) => (curr.is_complete ? acc + 1 : acc),
@@ -30,6 +36,16 @@ export default function TaskViewModal() {
   const handleEditingTask = () => {
     closeViewTaskDialog();
     openNewTaskDialog(true);
+  };
+
+  const handleDeleteTask = async (id: string) => {
+    setIsLoading(true);
+    try {
+      await deleteTask(id);
+      closeViewTaskDialog();
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const handleCheck = async (val: boolean, id: string) => {
@@ -58,7 +74,9 @@ export default function TaskViewModal() {
         aria-description=""
       >
         <DialogHeader className="flex relative">
-          <DialogTitle className="text-xl text-white">Add New Task</DialogTitle>
+          <DialogTitle className="text-xl text-white capitalize">
+            {state.task?.title}
+          </DialogTitle>
 
           <Popover>
             <PopoverTrigger>
@@ -88,7 +106,12 @@ export default function TaskViewModal() {
               >
                 Edit Task
               </div>
-              <div className="text-red-500 px-8 py-3 cursor-pointer">
+              <div
+                className="text-red-500 px-8 py-3 cursor-pointer"
+                onClick={() => {
+                  if (state.task) handleDeleteTask(state.task?._id);
+                }}
+              >
                 Delete Task
               </div>
             </PopoverContent>
@@ -99,7 +122,9 @@ export default function TaskViewModal() {
 
         <div className="space-y-6">
           <p className="text-[#828fa3] leading-snug text-sm">
-            {state.task?.description}
+            {state?.task?.description
+              ? capitalizeFirstLetter(state.task.description)
+              : ""}
           </p>
 
           <h5 className="text-sm text-white mb-2">
@@ -123,7 +148,7 @@ export default function TaskViewModal() {
                     htmlFor={`subtask-${idx}`}
                     className="text-white font-normal"
                   >
-                    {subtask.subtask}
+                    {capitalizeFirstLetter(subtask.subtask)}
                   </Label>
                 </div>
               ))}
