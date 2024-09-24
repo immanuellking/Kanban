@@ -19,7 +19,7 @@ export default function CreateNewBoardModal() {
       defaultOpen={state.isOpen}
     >
       <DialogContent
-        className="bg-[#2B2C37] border-none"
+        className="bg-[#2B2C37] border-none max-h-[40rem]"
         hideCloseButton={true}
         aria-description=""
       >
