@@ -24,7 +24,9 @@ export default function AddNewTaskModal({ columns }: { columns: Column[] }) {
         aria-description=""
       >
         <DialogHeader>
-          <DialogTitle className="text-xl text-white">Add New Task</DialogTitle>
+          <DialogTitle className="text-xl text-white">
+            {state.isEditingTask ? "Edit task" : "Add New Task"}
+          </DialogTitle>
           <DialogDescription />
         </DialogHeader>
         <div className="overflow-auto container-scrollbar">
