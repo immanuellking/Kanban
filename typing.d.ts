@@ -12,7 +12,8 @@ type SubTask = {
 type Task = {
   _id: string;
   title: string;
-  column_name: string,
+  column_name: string;
+  column_id: string;
   description: string;
   subTasks: SubTask[];
 };
@@ -28,3 +29,24 @@ type BoardData = {
   board_name: string;
   columns: Column[];
 };
+
+type StateType = {
+  isOpen: boolean;
+  isAddNewColumnOpen: boolean;
+  isLoading: boolean;
+  isAddNewTaskOpen: boolean;
+  viewTaskOpen: boolean;
+  isEditingTask: boolean;
+  task: Task | null;
+};
+
+type ActionType =
+  | { type: "OPEN_DIALOG" }
+  | { type: "CLOSE_DIALOG" }
+  | { type: "OPEN_NEW_COLUMN_DIALOG" }
+  | { type: "CLOSE_NEW_COLUMN_DIALOG" }
+  | { type: "OPEN_NEW_TASK_DIALOG"; payload: boolean }
+  | { type: "CLOSE_NEW_TASK_DIALOG" }
+  | { type: "OPEN_VIEW_TASK_DIALOG"; payload: Task }
+  | { type: "CLOSE_VIEW_TASK_DIALOG" }
+  | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
