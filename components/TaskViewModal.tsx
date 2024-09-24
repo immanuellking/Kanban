@@ -19,12 +19,18 @@ import { Label } from "./ui/label";
 import { handleSubtaskIsCompleted } from "@/lib/action";
 
 export default function TaskViewModal() {
-  const { state, closeViewTaskDialog, openViewTaskDialog } = useDialog();
+  const { state, closeViewTaskDialog, openViewTaskDialog, openNewTaskDialog } =
+    useDialog();
 
   const done = state.task?.subTasks.reduce(
     (acc, curr) => (curr.is_complete ? acc + 1 : acc),
     0
   );
+
+  const handleEditingTask = () => {
+    closeViewTaskDialog();
+    openNewTaskDialog(true);
+  };
 
   const handleCheck = async (val: boolean, id: string) => {
     if (state.task) {
@@ -38,6 +44,7 @@ export default function TaskViewModal() {
       openViewTaskDialog(updatedViewTask);
     }
   };
+
   return (
     <Dialog
       onOpenChange={closeViewTaskDialog}
@@ -75,8 +82,15 @@ export default function TaskViewModal() {
               sideOffset={2}
               className="bg-[#20212c] border-none w-fit m-0 p-0"
             >
-              <div className="text-gray-500 px-8 py-3 cursor-pointer">Edit Task</div>
-              <div className="text-red-500 px-8 py-3 cursor-pointer">Delete Task</div>
+              <div
+                className="text-gray-500 px-8 py-3 cursor-pointer"
+                onClick={() => handleEditingTask()}
+              >
+                Edit Task
+              </div>
+              <div className="text-red-500 px-8 py-3 cursor-pointer">
+                Delete Task
+              </div>
             </PopoverContent>
           </Popover>
 
