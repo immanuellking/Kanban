@@ -90,7 +90,7 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
                   <path d="M12 9h8"></path>
                   <path d="M12 4v16"></path>
                 </svg>
-                <p className="text-base font-medium">{board.board_name}</p>
+                <p className="text-base capitalize font-medium">{board.board_name}</p>
               </li>
             ))}
           </ul>
