@@ -23,7 +23,7 @@ export default function AddNewColumnModal({
       defaultOpen={state.isAddNewColumnOpen}
     >
       <DialogContent
-        className="bg-[#2B2C37] border-none"
+        className="bg-[#2B2C37] border-none max-h-[40rem]"
         hideCloseButton={true}
         aria-description="add new column"
       >
