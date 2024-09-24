@@ -45,7 +45,7 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
             <button
               className="flex text-white font-semibold bg-[#635FC7] py-4 px-8 rounded-full disabled:cursor-not-allowed disabled:opacity-60"
               disabled={!boardData.length}
-              onClick={() => openNewTaskDialog()}
+              onClick={() => openNewTaskDialog(false)}
             >
               {" "}
               {/*Disale when board is empty*/}
