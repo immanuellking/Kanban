@@ -53,7 +53,7 @@ export default function TaskViewModal() {
       defaultOpen={state.viewTaskOpen}
     >
       <DialogContent
-        className="bg-[#2B2C37] border-none min-h-[22rem]"
+        className="bg-[#2B2C37] border-none max-h-[30rem]"
         hideCloseButton={true}
         aria-description=""
       >
@@ -96,16 +96,17 @@ export default function TaskViewModal() {
 
           <DialogDescription />
         </DialogHeader>
-        <div className="overflow-auto container-scrollbar space-y-6">
+
+        <div className="space-y-6">
           <p className="text-[#828fa3] leading-snug text-sm">
             {state.task?.description}
           </p>
 
-          <div>
-            <h5 className="text-sm text-white mb-2">
-              Subtasks ({done} of {state.task?.subTasks.length})
-            </h5>
-            <div>
+          <h5 className="text-sm text-white mb-2">
+            Subtasks ({done} of {state.task?.subTasks.length})
+          </h5>
+          <div className="overflow-auto max-h-[10rem] container-scrollbar">
+            <div className="gap-y-2 flex flex-col">
               {state.task?.subTasks.map((subtask, idx) => (
                 <div
                   key={subtask._id}
