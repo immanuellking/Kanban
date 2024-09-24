@@ -3,6 +3,7 @@ import { useDialog } from "@/context/dialogContext";
 import { useSearchParams } from "next/navigation";
 import React from "react";
 import AddNewTaskModal from "./AddNewTaskModal";
+import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
 
 export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
   const searchParams = useSearchParams();
@@ -64,23 +65,39 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
               Add New Task
             </button>
 
-            <button
-              className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
-              disabled={!boardData.length}
-            >
-              <svg
-                stroke="currentColor"
-                fill="currentColor"
-                strokeWidth="0"
-                viewBox="0 0 16 16"
-                className="text-[1.2rem] text-[#828fa3]"
-                height="1em"
-                width="1em"
-                xmlns="http://www.w3.org/2000/svg"
+            <Popover>
+              <PopoverTrigger>
+                <button
+                  className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={!boardData.length}
+                >
+                  <svg
+                    stroke="currentColor"
+                    fill="currentColor"
+                    strokeWidth="0"
+                    viewBox="0 0 16 16"
+                    className="text-[1.2rem] text-[#828fa3]"
+                    height="1em"
+                    width="1em"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                  </svg>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent
+                align="end"
+                sideOffset={20}
+                className="bg-[#20212c] border-none rounded-none shadow-md shadow-[#635FC7]/50 w-[18rem] m-0 p-0"
               >
-                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
-              </svg>
-            </button>
+                <div className="text-gray-500 px-8 py-3 cursor-pointer">
+                  Edit Board
+                </div>
+                <div className="text-red-500 px-8 py-3 cursor-pointer">
+                  Delete Board
+                </div>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
       </div>
