@@ -1,8 +1,8 @@
-import { type ClassValue, clsx } from "clsx"
-import { twMerge } from "tailwind-merge"
+import { type ClassValue, clsx } from "clsx";
+import { twMerge } from "tailwind-merge";
 
 export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
+  return twMerge(clsx(inputs));
 }
 
 export function getRandomBrightColor(): string {
@@ -20,4 +20,9 @@ export function getRandomBrightColor(): string {
 
   // Return the RGB color as a string
   return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+}
+
+export function capitalizeFirstLetter(str: string): string {
+  const result = str.slice(0, 1).toUpperCase() + str.slice(1);
+  return result;
 }
