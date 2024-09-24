@@ -55,8 +55,8 @@ export default function BoardContainer({
                               }}
                             ></div>
                           )}
-                          <p className="text-gray-400 text-sm">
-                            {column.column_name}
+                          <p className="text-gray-400 capitalize text-sm">
+                            {column.column_name} ({column.tasks.length})
                           </p>
                         </div>
                         <ColumnTasks tasks={column.tasks} />
