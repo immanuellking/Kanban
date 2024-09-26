@@ -23,6 +23,7 @@ import {
 import { useDialog } from "@/context/dialogContext";
 import { addNewTask, editTask } from "@/lib/action";
 import { useEffect, useRef, useState } from "react";
+import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 
 export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   const { state, setIsLoading, closeNewTaskDialog } = useDialog();
@@ -37,7 +38,7 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
           _id: sub._id,
           is_complete: sub.is_complete,
         }))
-      : [{ subtask_name: "" }],
+      : [{ subtask_name: "", _id: "", is_complete: false }],
     status: state.task ? state.task.column_name : "",
   };
 
@@ -132,17 +133,7 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
     }
   };
 
-  const titleRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (titleRef.current) {
-      titleRef.current.focus();
-      titleRef.current.setSelectionRange(
-        titleRef.current.value.length,
-        titleRef.current.value.length
-      );
-    }
-  }, []);
+  const { titleRef } = useRemoveHighlight();
 
   return (
     <Form {...form}>
