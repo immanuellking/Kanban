@@ -30,6 +30,15 @@ type BoardData = {
   columns: Column[];
 };
 
+type Board = {
+  board_id: string;
+  board_name: string;
+  columns: {
+    column_id: string;
+    column_name: string;
+  }[];
+};
+
 type StateType = {
   isOpen: boolean;
   isAddNewColumnOpen: boolean;
@@ -37,7 +46,9 @@ type StateType = {
   isAddNewTaskOpen: boolean;
   viewTaskOpen: boolean;
   isEditingTask: boolean;
+  isEditingBoard: boolean;
   task: Task | null;
+  board: Board | null;
 };
 
 type ActionType =
@@ -49,4 +60,6 @@ type ActionType =
   | { type: "CLOSE_NEW_TASK_DIALOG" }
   | { type: "OPEN_VIEW_TASK_DIALOG"; payload: Task }
   | { type: "CLOSE_VIEW_TASK_DIALOG" }
-  | { type: "TOGGLE_LOADING_STATE"; payload: boolean };
+  | { type: "TOGGLE_LOADING_STATE"; payload: boolean }
+  | { type: "OPEN_EDIT_BOARD"; payload: Board }
+  | { type: "CLOSE_EDIT_BOARD" };
