@@ -12,6 +12,7 @@ const initialState: StateType = {
   isEditingBoard: false,
   task: null,
   board: null,
+  isDeleteBoard: false,
 };
 
 const DialogContext = createContext<{
@@ -28,6 +29,8 @@ const DialogContext = createContext<{
   setIsLoading: (value: boolean) => void;
   openEditBoard: (board: Board) => void;
   closeEditBoard: () => void;
+  openDeleteBoard: () => void;
+  closeDeleteBoard: () => void;
 }>({
   state: initialState,
   dispatch: () => null,
@@ -42,6 +45,8 @@ const DialogContext = createContext<{
   setIsLoading: () => {},
   openEditBoard: () => {},
   closeEditBoard: () => {},
+  openDeleteBoard: () => {},
+  closeDeleteBoard: () => {},
 });
 
 export function DialogProvider({ children }: { children: ReactNode }) {
@@ -87,6 +92,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_EDIT_BOARD" });
   };
 
+  const openDeleteBoard = () => {
+    dispatch({ type: "OPEN_DELETE_BOARD" });
+  };
+
+  const closeDeleteBoard = () => {
+    dispatch({ type: "CLOSE_DELETE_BOARD" });
+  };
+
   const setIsLoading = (value: boolean) => {
     dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
   };
@@ -107,6 +120,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         setIsLoading,
         openEditBoard,
         closeEditBoard,
+        openDeleteBoard,
+        closeDeleteBoard,
       }}
     >
       {children}
