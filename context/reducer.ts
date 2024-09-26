@@ -47,6 +47,18 @@ export const reducer = (state: StateType, action: ActionType) => {
         board: null,
       };
 
+    case "OPEN_DELETE_BOARD":
+      return {
+        ...state,
+        isDeleteBoard: true,
+      };
+
+    case "CLOSE_DELETE_BOARD":
+      return {
+        ...state,
+        isDeleteBoard: false,
+      };
+
     default:
       return state;
   }
