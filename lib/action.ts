@@ -40,7 +40,7 @@ export async function createBoard(values: BoardType) {
 
   try {
     const board = await Board.create({
-      board_name: values.board_name,
+      board_name: values.board_name.trim(),
       user_id: userId,
     });
 
@@ -63,6 +63,9 @@ export async function createBoard(values: BoardType) {
     if (!updatedUser) {
       throw new Error("Failed to update the user with the new board.");
     }
+
+    return board.board_name;
+    // revalidatePath("/")
   } catch (error) {
     console.error("Error creating board or updating user:", error);
     throw new Error("Failed to create board or update user.");
@@ -121,7 +124,7 @@ async function createdColumns(
   const createdColumns = await Promise.all(
     columns.map((column) =>
       Column.create({
-        column_name: column.column_name,
+        column_name: column.column_name.trim(),
         user_id: user_id,
         board_id: board_id,
         tasks: [],
