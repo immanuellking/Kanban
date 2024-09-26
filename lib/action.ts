@@ -194,7 +194,7 @@ export async function handleSubtaskIsCompleted(value: boolean, id: string) {
 
     revalidatePath("/");
   } catch (error) {
-    console.log("Error checking/unchecking subtask", error)
+    console.log("Error checking/unchecking subtask", error);
   }
 }
 
@@ -332,4 +332,91 @@ export const deleteTask = async (task_id: string) => {
   } catch (error) {
     console.error("Error deleting task:", error);
   }
+};
+
+export const editBoard = async (board: Board, prevBoard: Board) => {
+  // console.log("Checking Values", board, "Prev", prevBoard);
+
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
+  const boardId = prevBoard.board_id;
+
+  const updateBoardName = async () => {
+    if (board.board_name.trim() !== prevBoard.board_name.trim()) {
+      await Board.findByIdAndUpdate(boardId, {
+        board_name: board.board_name,
+      });
+    }
+  };
+
+  const updateColumns = async () => {
+    const existingColumnIds = board.columns
+      .map((col) => col.column_id)
+      .filter((col) => col !== "");
+    const existingColumns = board.columns.filter((col) => col.column_id !== "");
+    const existingColumnNames = new Set(
+      prevBoard.columns.map((col) => col.column_name.trim())
+    );
+    const newColumns = board.columns
+      .map((col) => (col.column_id === "" ? col.column_name : ""))
+      .filter((col) => col !== "");
+
+    // console.log(existingColumnIds)
+    for (const col of prevBoard.columns) {
+      if (!existingColumnIds.includes(col.column_id)) {
+        const res = await Column.findById(col.column_id).select("tasks");
+        console.log(res);
+
+        if (res.tasks.length > 0) {
+          res.tasks.map(async (taskId: mongoose.Types.ObjectId) => {
+            const res = await Task.findById(taskId).select("subTasks");
+            console.log("their subtasks", res);
+            res.subTasks.map(async (subTaskId: mongoose.Types.ObjectId) => {
+              await SubTask.findByIdAndDelete(subTaskId);
+            });
+            await Task.findByIdAndDelete(taskId);
+          });
+        }
+
+        await Column.findByIdAndDelete(col.column_id);
+      }
+    }
+
+    await Promise.all(
+      existingColumns.map(async (col) => {
+        if (!existingColumnNames.has(col.column_name.trim())) {
+         await Column.findByIdAndUpdate(col.column_id, {
+            column_name: col.column_name,
+          });
+        }
+      })
+    );
+
+    await Promise.all(
+      newColumns.map(async (col) => {
+        const newCol = await Column.create({
+          column_name: col,
+          user_id: userId,
+          board_id: board.board_id,
+        });
+
+        await Board.findByIdAndUpdate(board.board_id, {
+          $push: { columns: newCol._id },
+        });
+      })
+    );
+  };
+
+  try {
+    await updateBoardName();
+    await updateColumns();
+  } catch (error) {
+    console.error("Error updating Board:", error);
+  }
+
+  revalidatePath("/");
 };
