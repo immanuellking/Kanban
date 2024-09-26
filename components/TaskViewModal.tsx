@@ -79,21 +79,21 @@ export default function TaskViewModal() {
           </DialogTitle>
 
           <Popover>
-            <PopoverTrigger>
-              <button className="hover:bg-[#20212c] absolute -top-3 right-0 w-fit py-3 px-0.5 rounded-full transition-all ease-linear duration-150">
-                <svg
-                  stroke="currentColor"
-                  fill="currentColor"
-                  strokeWidth="0"
-                  viewBox="0 0 16 16"
-                  className="text-[1.2rem] text-[#828fa3]"
-                  height="1em"
-                  width="1em"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
-                </svg>
-              </button>
+            <PopoverTrigger className="hover:bg-[#20212c] absolute -top-3 right-0 w-fit py-3 px-0.5 rounded-full transition-all ease-linear duration-150">
+              {/* <button className="hover:bg-[#20212c] absolute -top-3 right-0 w-fit py-3 px-0.5 rounded-full transition-all ease-linear duration-150"> */}
+              <svg
+                stroke="currentColor"
+                fill="currentColor"
+                strokeWidth="0"
+                viewBox="0 0 16 16"
+                className="text-[1.2rem] text-[#828fa3]"
+                height="1em"
+                width="1em"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+              </svg>
+              {/* </button> */}
             </PopoverTrigger>
             <PopoverContent
               align="end"
