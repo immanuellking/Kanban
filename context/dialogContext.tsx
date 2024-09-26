@@ -9,7 +9,9 @@ const initialState: StateType = {
   isAddNewTaskOpen: false,
   viewTaskOpen: false,
   isEditingTask: false,
+  isEditingBoard: false,
   task: null,
+  board: null,
 };
 
 const DialogContext = createContext<{
@@ -24,6 +26,8 @@ const DialogContext = createContext<{
   openViewTaskDialog: (task: Task) => void;
   closeViewTaskDialog: () => void;
   setIsLoading: (value: boolean) => void;
+  openEditBoard: (board: Board) => void;
+  closeEditBoard: () => void;
 }>({
   state: initialState,
   dispatch: () => null,
@@ -36,6 +40,8 @@ const DialogContext = createContext<{
   openViewTaskDialog: () => {},
   closeViewTaskDialog: () => {},
   setIsLoading: () => {},
+  openEditBoard: () => {},
+  closeEditBoard: () => {},
 });
 
 export function DialogProvider({ children }: { children: ReactNode }) {
@@ -73,6 +79,14 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "CLOSE_VIEW_TASK_DIALOG" });
   };
 
+  const openEditBoard = (board: Board) => {
+    dispatch({ type: "OPEN_EDIT_BOARD", payload: board });
+  };
+
+  const closeEditBoard = () => {
+    dispatch({ type: "CLOSE_EDIT_BOARD" });
+  };
+
   const setIsLoading = (value: boolean) => {
     dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
   };
@@ -91,6 +105,8 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         closeViewTaskDialog,
         openViewTaskDialog,
         setIsLoading,
+        openEditBoard,
+        closeEditBoard,
       }}
     >
       {children}
