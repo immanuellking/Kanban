@@ -14,13 +14,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { createBoard, checkBoardNameExists, editBoard } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "./Loader";
 import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 
 export function AddNewBoardForm() {
   const { state, closeDialog, setIsLoading } = useDialog();
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const { titleRef } = useRemoveHighlight();
 
@@ -81,6 +82,7 @@ export function AddNewBoardForm() {
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof FormSchema>) {
+    const params = new URLSearchParams(searchParams);
     const updatedBoardVal = {
       board_id: state.board ? state.board?.board_id : "",
       ...values,
@@ -88,12 +90,15 @@ export function AddNewBoardForm() {
     setIsLoading(true);
     try {
       if (!state.isEditingBoard) {
-        await createBoard(values);
+        const board_name = await createBoard(values);
         closeDialog();
-        router.push(`/?board=${values.board_name}`);
-        setIsLoading(false);
+        params.delete("board");
+        router.push(`/?board=${board_name}`);
       } else {
-        if (state.board) await editBoard(updatedBoardVal, state.board);
+        if (state.board) {
+          await editBoard(updatedBoardVal, state.board);
+          closeDialog();
+        }
       }
     } catch (error) {
       setIsLoading(false);
