@@ -4,13 +4,14 @@ import { useSearchParams } from "next/navigation";
 import React from "react";
 import AddNewTaskModal from "./AddNewTaskModal";
 import { Popover, PopoverContent, PopoverTrigger } from "./ui/popover";
+import DeleteBoardModal from "./DeleteBoardModal";
 
 export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
   const searchParams = useSearchParams();
   const params = new URLSearchParams(searchParams);
   const currentTab = params.get("board");
 
-  const { openNewTaskDialog, openEditBoard } = useDialog();
+  const { openNewTaskDialog, openEditBoard, openDeleteBoard } = useDialog();
 
   const columns = boardData[0]?.columns;
 
@@ -25,7 +26,7 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
       columns: editCol,
     };
     // console.log(boardEditData)
-    openEditBoard(boardEditData)
+    openEditBoard(boardEditData);
   };
 
   return (
@@ -82,24 +83,26 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
             </button>
 
             <Popover>
-              <PopoverTrigger className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={!boardData.length}>
+              <PopoverTrigger
+                className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={!boardData.length}
+              >
                 {/* <button
                   className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
                   disabled={!boardData.length} */}
                 {/* > */}
-                  <svg
-                    stroke="currentColor"
-                    fill="currentColor"
-                    strokeWidth="0"
-                    viewBox="0 0 16 16"
-                    className="text-[1.2rem] text-[#828fa3]"
-                    height="1em"
-                    width="1em"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
-                  </svg>
+                <svg
+                  stroke="currentColor"
+                  fill="currentColor"
+                  strokeWidth="0"
+                  viewBox="0 0 16 16"
+                  className="text-[1.2rem] text-[#828fa3]"
+                  height="1em"
+                  width="1em"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
+                </svg>
                 {/* </button> */}
               </PopoverTrigger>
               <PopoverContent
@@ -113,7 +116,10 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
                 >
                   Edit Board
                 </div>
-                <div className="text-red-500 px-8 py-3 cursor-pointer">
+                <div
+                  className="text-red-500 px-8 py-3 cursor-pointer"
+                  onClick={() => openDeleteBoard()}
+                >
                   Delete Board
                 </div>
               </PopoverContent>
@@ -122,6 +128,12 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
         </div>
       </div>
       <AddNewTaskModal columns={columns} />
+      {boardData.length > 0 && (
+        <DeleteBoardModal
+          boardName={boardData[0].board_name}
+          boardId={boardData[0].board_id}
+        />
+      )}
     </>
   );
 }
