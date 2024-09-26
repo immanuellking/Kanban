@@ -12,44 +12,64 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createBoard, checkBoardNameExists } from "@/lib/action";
+import { createBoard, checkBoardNameExists, editBoard } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
 import { useRouter } from "next/navigation";
 import { Loader } from "./Loader";
-
-async function isBoardNameUnique(name: string): Promise<boolean> {
-  const exists = await checkBoardNameExists(name); // Make sure this returns a boolean
-  return !exists; // Return true if the name is unique
-}
-
-const ColumnSchema = z.object({
-  column_name: z
-    .string()
-    .min(2, { message: "Column name must be at least 1 character" })
-    .max(50, { message: "Column name must not exceed 50 characters" }),
-});
-
-const FormSchema = z.object({
-  board_name: z
-    .string()
-    .min(2, { message: "Board name must be at least 2 characters" })
-    .max(50)
-    .refine(async (value) => await isBoardNameUnique(value), {
-      message: "Board name already exists.",
-    }),
-  columns: z.array(ColumnSchema),
-});
+import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 
 export function AddNewBoardForm() {
+  const { state, closeDialog, setIsLoading } = useDialog();
   const router = useRouter();
+
+  const { titleRef } = useRemoveHighlight();
+
+  const editValues = {
+    board_name: state.board ? state.board.board_name : "",
+    columns: state.board
+      ? state.board.columns.map((column) => ({
+          column_name: column.column_name,
+          column_id: column.column_id,
+        }))
+      : [],
+  };
+
+  async function isBoardNameUnique(name: string): Promise<boolean> {
+    if (state.isEditingBoard && name === state.board?.board_name) {
+      return true;
+    }
+    const exists = await checkBoardNameExists(name); // Make sure this returns a boolean
+    return !exists; // Return true if the name is unique
+  }
+
+  const ColumnSchema = z.object({
+    column_name: z
+      .string()
+      .min(2, { message: "Column name must be at least 1 character" })
+      .max(50, { message: "Column name must not exceed 50 characters" }),
+    column_id: z.string(),
+  });
+
+  const FormSchema = z.object({
+    board_name: z
+      .string()
+      .min(2, { message: "Board name must be at least 2 characters" })
+      .max(50)
+      .refine(async (value) => await isBoardNameUnique(value), {
+        message: "Board name already exists.",
+      }),
+    columns: z.array(ColumnSchema),
+  });
 
   // 1. Define your form.
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
-    defaultValues: {
-      board_name: "",
-      columns: [{ column_name: "" }],
-    },
+    defaultValues: state.isEditingBoard
+      ? editValues
+      : {
+          board_name: "",
+          columns: [{ column_name: "", column_id: "" }],
+        },
   });
 
   const { handleSubmit, control } = form;
@@ -59,16 +79,22 @@ export function AddNewBoardForm() {
     control,
   });
 
-  const { state, closeDialog, setIsLoading } = useDialog();
-
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof FormSchema>) {
+    const updatedBoardVal = {
+      board_id: state.board ? state.board?.board_id : "",
+      ...values,
+    };
     setIsLoading(true);
     try {
-      await createBoard(values);
-      closeDialog();
-      router.push(`/?board=${values.board_name}`);
-      setIsLoading(false);
+      if (!state.isEditingBoard) {
+        await createBoard(values);
+        closeDialog();
+        router.push(`/?board=${values.board_name}`);
+        setIsLoading(false);
+      } else {
+        if (state.board) await editBoard(updatedBoardVal, state.board);
+      }
     } catch (error) {
       setIsLoading(false);
       console.log("Failed to create board", error);
@@ -90,6 +116,7 @@ export function AddNewBoardForm() {
                     placeholder="Enter Your Board Name Here"
                     className="bg-transparent placeholder:text-base text-base text-white border-[1px] border-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-[#726fdb] hover:border-[#726fdb]"
                     {...field}
+                    ref={titleRef}
                   />
                 </FormControl>
                 <FormMessage />
@@ -141,7 +168,7 @@ export function AddNewBoardForm() {
           <div className=" space-y-4">
             <Button
               type="button"
-              onClick={() => append({ column_name: "" })}
+              onClick={() => append({ column_name: "", column_id: "" })}
               className="w-full rounded-full text-[#635FC7] hover:text-white bg-white hover:bg-[#adace1] transition-all ease-in duration-150"
             >
               + Add Column
