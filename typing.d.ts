@@ -49,6 +49,7 @@ type StateType = {
   isEditingBoard: boolean;
   task: Task | null;
   board: Board | null;
+  isDeleteBoard: boolean;
 };
 
 type ActionType =
@@ -62,4 +63,6 @@ type ActionType =
   | { type: "CLOSE_VIEW_TASK_DIALOG" }
   | { type: "TOGGLE_LOADING_STATE"; payload: boolean }
   | { type: "OPEN_EDIT_BOARD"; payload: Board }
-  | { type: "CLOSE_EDIT_BOARD" };
+  | { type: "CLOSE_EDIT_BOARD" }
+  | { type: "OPEN_DELETE_BOARD" }
+  | { type: "CLOSE_DELETE_BOARD" };
