@@ -389,7 +389,7 @@ export const editBoard = async (board: Board, prevBoard: Board) => {
     await Promise.all(
       existingColumns.map(async (col) => {
         if (!existingColumnNames.has(col.column_name.trim())) {
-         await Column.findByIdAndUpdate(col.column_id, {
+          await Column.findByIdAndUpdate(col.column_id, {
             column_name: col.column_name,
           });
         }
@@ -415,7 +415,47 @@ export const editBoard = async (board: Board, prevBoard: Board) => {
     await updateBoardName();
     await updateColumns();
   } catch (error) {
-    console.error("Error updating Board:", error);
+    console.error("Error Updating Board:", error);
+  }
+
+  revalidatePath("/");
+};
+
+export const deleteBoard = async (board_id: string) => {
+  const { userId } = auth();
+
+  if (!userId) {
+    throw new Error("User is not authenticated.");
+  }
+
+  try {
+    const board = await Board.findById(board_id).select("columns");
+
+    console.log(board);
+
+    await Promise.all(
+      board.columns.map(async (column_id: mongoose.Types.ObjectId) => {
+        const colObj = await Column.findById(column_id).select("tasks");
+        // console.log("Column", tasks)
+        colObj.tasks.map(async (task_id: mongoose.Types.ObjectId) => {
+          const taskObj = await Task.findById(task_id).select("subTasks");
+
+          taskObj.subTasks.map(async (subtask_id: mongoose.Types.ObjectId) => {
+            await SubTask.findByIdAndDelete(subtask_id);
+          });
+
+          await Task.findByIdAndDelete(task_id);
+        });
+        await Column.findByIdAndDelete(column_id);
+      })
+    );
+    await Board.findByIdAndDelete(board_id);
+    const user = await User.where("clerkId").equals(`${userId}`).select("_id");
+    await User.findByIdAndUpdate(user[0]._id, {
+      $pull: { boards: board_id },
+    });
+  } catch (error) {
+    console.error("Error Deleting Board:", error);
   }
 
   revalidatePath("/");
