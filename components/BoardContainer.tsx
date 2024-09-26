@@ -1,13 +1,11 @@
 "use client";
-import { useRouter, useSearchParams } from "next/navigation";
-import { getRandomBrightColor } from "@/lib/utils";
+import { useSearchParams } from "next/navigation";
 import AddNewColumnModal from "./AddNewColumnModal";
 import { useDialog } from "@/context/dialogContext";
-import { useEffect, useState } from "react";
-import EmptyBoard from "./EmptyBoard";
+import { useEffect } from "react";
 import LoginNow from "./LoginNow";
-import AddNewColumnButton from "./AddNewColumnButton";
-import ColumnTasks from "./ColumnTasks";
+
+import ColumnContainers from "./ColumnContainers";
 
 export default function BoardContainer({
   isSignedIn,
@@ -18,11 +16,7 @@ export default function BoardContainer({
 }) {
   const searchParams = useSearchParams();
   const { setIsLoading } = useDialog();
-  const [isClient, setIsClient] = useState(false);
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
@@ -38,36 +32,7 @@ export default function BoardContainer({
           <LoginNow />
         ) : (
           <div className="overflow-x-auto no-scrollbar flex h-full">
-            {boardData.length > 0 ? (
-              <div className="h-full pt-6 pb-4 px-6 flex gap-4">
-                {boardData[0]?.columns.length > 0
-                  ? boardData[0]?.columns.map((column) => (
-                      <div
-                        key={column._id}
-                        className="h-full w-[18rem] space-y-6"
-                      >
-                        <div className="flex items-center gap-x-2">
-                          {isClient && (
-                            <div
-                              className={`h-3 w-3 rounded-full`}
-                              style={{
-                                background: `${getRandomBrightColor()}`,
-                              }}
-                            ></div>
-                          )}
-                          <p className="text-gray-400 capitalize text-sm">
-                            {column.column_name} ({column.tasks.length})
-                          </p>
-                        </div>
-                        <ColumnTasks tasks={column.tasks} />
-                      </div>
-                    ))
-                  : null}
-                <AddNewColumnButton />
-              </div>
-            ) : (
-              <EmptyBoard />
-            )}
+            <ColumnContainers boardData={boardData} />
           </div>
         )}
       </section>
