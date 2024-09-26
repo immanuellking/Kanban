@@ -10,15 +10,31 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
   const params = new URLSearchParams(searchParams);
   const currentTab = params.get("board");
 
-  const { openNewTaskDialog } = useDialog();
+  const { openNewTaskDialog, openEditBoard } = useDialog();
 
   const columns = boardData[0]?.columns;
+
+  const handleEditingBoard = () => {
+    const editCol = columns.map((col) => ({
+      column_id: col._id,
+      column_name: col.column_name,
+    }));
+    const boardEditData = {
+      board_id: boardData[0].board_id,
+      board_name: boardData[0].board_name,
+      columns: editCol,
+    };
+    // console.log(boardEditData)
+    openEditBoard(boardEditData)
+  };
 
   return (
     <>
       <div className="w-full flex items-center justify-between px-10 py-6 bg-[#2B2C37]">
         <div>
-          <h1 className="text-2xl text-white font-semibold">{currentTab}</h1>
+          <h1 className="text-2xl text-white font-semibold capitalize">
+            {currentTab}
+          </h1>
         </div>
 
         <div className="flex gap-x-12">
@@ -66,11 +82,12 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
             </button>
 
             <Popover>
-              <PopoverTrigger>
-                <button
+              <PopoverTrigger className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
+                  disabled={!boardData.length}>
+                {/* <button
                   className="hover:bg-[#20212c] py-3 px-0.5 rounded-full transition-all ease-linear duration-150 disabled:cursor-not-allowed disabled:opacity-60"
-                  disabled={!boardData.length}
-                >
+                  disabled={!boardData.length} */}
+                {/* > */}
                   <svg
                     stroke="currentColor"
                     fill="currentColor"
@@ -83,14 +100,17 @@ export default function BoardHeader({ boardData }: { boardData: BoardData[] }) {
                   >
                     <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0"></path>
                   </svg>
-                </button>
+                {/* </button> */}
               </PopoverTrigger>
               <PopoverContent
                 align="end"
                 sideOffset={20}
                 className="bg-[#20212c] border-none rounded-none shadow-md shadow-[#635FC7]/50 w-[18rem] m-0 p-0"
               >
-                <div className="text-gray-500 px-8 py-3 cursor-pointer">
+                <div
+                  className="text-gray-500 px-8 py-3 cursor-pointer"
+                  onClick={handleEditingBoard}
+                >
                   Edit Board
                 </div>
                 <div className="text-red-500 px-8 py-3 cursor-pointer">
