@@ -17,7 +17,7 @@ import { useDialog } from "@/context/dialogContext";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
-import { capitalizeFirstLetter } from "@/lib/utils";
+import { capitalizeFirstLetter, subtaskTotal } from "@/lib/utils";
 
 export default function TaskViewModal() {
   const {
@@ -28,10 +28,7 @@ export default function TaskViewModal() {
     setIsLoading,
   } = useDialog();
 
-  const done = state.task?.subTasks.reduce(
-    (acc, curr) => (curr.is_complete ? acc + 1 : acc),
-    0
-  );
+  const done = state.task ? subtaskTotal(state.task?.subTasks) : 0;
 
   const handleEditingTask = () => {
     closeViewTaskDialog();
@@ -50,7 +47,6 @@ export default function TaskViewModal() {
 
   const handleCheck = async (val: boolean, id: string) => {
     if (state.task) {
-      await handleSubtaskIsCompleted(val, id);
       const updatedViewTask = {
         ...state.task,
         subTasks: state.task?.subTasks.map((sub) =>
@@ -58,6 +54,7 @@ export default function TaskViewModal() {
         ),
       };
       openViewTaskDialog(updatedViewTask);
+      await handleSubtaskIsCompleted(val, id);
     }
   };
 
