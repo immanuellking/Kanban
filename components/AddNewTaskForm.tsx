@@ -262,7 +262,7 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
           type="submit"
           className="w-full rounded-full bg-[#635FC7] hover:bg-[#726fdb] transition-all ease-in duration-150"
         >
-          Save Changes
+          {state.isEditingTask ? "Save Changes" : "Create Task"}
         </Button>
       </form>
     </Form>
