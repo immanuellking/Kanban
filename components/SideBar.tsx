@@ -10,8 +10,8 @@ export default function SideBar({ boardTabs }: { boardTabs: BoardTab[] }) {
     <>
       <aside
         className={`${
-          open ? "flex" : "hidden"
-        } w-[18%] bg-[#2B2C37] border-r-[1px] border-[#828fa3]/30 pt-8 pb-4 h-screen flex-col`}
+          open ? "hidden sm:flex" : "hidden sm:hidden"
+        }  w-[25%] lg:w-[18%] bg-[#2B2C37] border-r-[1px] border-[#828fa3]/30 pt-8 pb-4 h-screen flex-col`}
       >
         <Logo />
 
@@ -39,7 +39,9 @@ export default function SideBar({ boardTabs }: { boardTabs: BoardTab[] }) {
       </aside>
       <div
         className={`${
-          open ? "hidden" : "block absolute bottom-20 left-0"
+          open
+            ? "hidden sm:hidden"
+            : "hidden sm:block absolute bottom-20 left-0"
         } bg-[#635FC7] hover:bg-[#635Fc7]/80 text-white py-4 px-4 rounded-r-full cursor-pointer transition-all ease-linear duration-150`}
         onClick={() => setOpen(true)}
       >
