@@ -3,6 +3,7 @@ import { useDialog } from "@/context/dialogContext";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
 import { Loader } from "./Loader";
+import { useAuth } from "@clerk/nextjs";
 
 export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
   const { state, openDialog, setIsLoading } = useDialog();
@@ -10,6 +11,7 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const { sessionId } = useAuth();
 
   function setTabInView(board_name: string) {
     setIsLoading(true);
@@ -53,7 +55,7 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
 
   return (
     <>
-      <div className="mt-[5rem] space-y-4 flex-1 h-full">
+      <div className="mt-[3rem] space-y-4 flex-1 h-full">
         <span className="pl-6 text-gray-400 text-sm">
           {boardTabs.length > 0
             ? `All Boards (${boardTabs.length})`
@@ -90,13 +92,16 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
                   <path d="M12 9h8"></path>
                   <path d="M12 4v16"></path>
                 </svg>
-                <p className="text-base capitalize font-medium">{board.board_name}</p>
+                <p className="text-base capitalize font-medium">
+                  {board.board_name}
+                </p>
               </li>
             ))}
           </ul>
           <button
-            className="flex items-center gap-x-2 text-[#635FC7] py-4 px-6 mt-2 rounded-r-full cursor-pointer"
+            className="flex items-center gap-x-2 text-[#635FC7] py-4 px-6 mt-2 rounded-r-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => openDialog()}
+            disabled={!sessionId}
           >
             <svg
               stroke="currentColor"
