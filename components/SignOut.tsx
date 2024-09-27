@@ -31,7 +31,7 @@ export default function SignOut() {
             </svg>
           </TooltipTrigger>
           <TooltipContent className="bg-[#2B2C37] border-none">
-            <p>Sign Out</p>
+            <p className="text-red-500">Sign Out</p>
           </TooltipContent>
         </Tooltip>
       </TooltipProvider>
