@@ -182,7 +182,7 @@ export function AddNewBoardForm() {
               type="submit"
               className="w-full rounded-full bg-[#635FC7] hover:bg-[#726fdb] transition-all ease-in duration-150"
             >
-              Create New Board
+              {state.isEditingBoard ? "Save Changes" : "Create New Board"}
             </Button>
           </div>
         </form>
