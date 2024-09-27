@@ -9,7 +9,7 @@ export default function MainBoard({
   boardData: BoardData[];
 }) {
   return (
-    <main className="w-[82%] h-screen flex flex-col">
+    <main className="w-[100%] h-screen flex flex-col">
       <BoardHeader boardData={boardData}/>
       <BoardContainer isSignedIn={isSignedIn} boardData={boardData} />
     </main>
