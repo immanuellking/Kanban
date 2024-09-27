@@ -240,11 +240,11 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
                   </SelectTrigger>
                 </FormControl>
                 <SelectContent className="bg-[#2B2C37] border-[#2B2C37]">
-                  {columns.map((column, idx) => {
+                  {columns.map((column) => {
                     return (
                       <SelectItem
                         value={column.column_name}
-                        key={idx}
+                        key={column._id}
                         className="text-white hover:bg-[#635FC7] focus:bg-[#635FC7] focus:text-white"
                       >
                         {column.column_name}
