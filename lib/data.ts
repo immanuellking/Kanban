@@ -1,7 +1,11 @@
 import Board from "@/models/Board";
 import dbConnect from "./mongoose";
 import User from "@/models/User";
+import Column from "@/models/Column";
 import { auth } from "@clerk/nextjs/server";
+import { unstable_noStore as noStore } from "next/cache";
+import Task from "@/models/Task";
+import SubTask from "@/models/SubTask";
 
 export async function createNewUser() {
   const { userId } = auth(); // Extract the userId from Clerk authentication
@@ -78,6 +82,7 @@ export async function getBoardTabs() {
 }
 
 export async function getBoardData(query: string) {
+  noStore()
   const { userId } = auth();
 
   if (!userId) {
@@ -85,19 +90,26 @@ export async function getBoardData(query: string) {
     return [];
   }
 
+  await dbConnect();
+
+  await Column.find({})
+  await Task.find({})
+  await SubTask.find({})
+
   try {
     const boardRawData = await Board.where("board_name")
       .equals(`${query}`)
       .select("board_name columns")
       .populate({
-        path: "columns", // Populate columns
+        path: "columns",
+        model: "Column", 
         populate: {
-          path: "tasks", // Populate tasks within each column
+          path: "tasks", 
           model: "Task",
           populate: {
             path: "subTasks",
             model: "SubTask",
-          }, // Ensure the 'Task' model is correctly specified
+          }, 
         },
       });
 
