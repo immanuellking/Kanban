@@ -146,10 +146,10 @@ export async function addNewTask(values: TaskType) {
 
   try {
     const task = await Task.create({
-      column_name: values.status,
+      column_name: values.status.trim(),
       column_id: values.column_id,
       title: values.title,
-      description: values.description,
+      description: values.description.trim(),
     });
 
     await Column.findOneAndUpdate(
