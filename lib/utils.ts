@@ -26,3 +26,12 @@ export function capitalizeFirstLetter(str: string): string {
   const result = str.slice(0, 1).toUpperCase() + str.slice(1);
   return result;
 }
+
+export function subtaskTotal (subTasks: SubTask[]) {
+  const result = subTasks.reduce(
+    (acc, curr) => (curr.is_complete ? acc + 1 : acc),
+    0
+  );
+
+  return result
+}
