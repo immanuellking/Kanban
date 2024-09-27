@@ -25,7 +25,7 @@ export default function CreateNewBoardModal() {
       >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">
-            Add New Board
+            {state.isEditingBoard ? "Edit Board" : "Add New Boards"}
           </DialogTitle>
           <DialogDescription />
         </DialogHeader>
