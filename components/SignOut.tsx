@@ -1,4 +1,4 @@
-import { SignOutButton, useAuth } from "@clerk/nextjs";
+import { SignOutButton } from "@clerk/nextjs";
 import {
   Tooltip,
   TooltipContent,
