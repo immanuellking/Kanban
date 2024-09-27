@@ -68,17 +68,6 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
     }
   }
 
-  //   const boardNameRef = useRef<HTMLInputElement>(null);
-
-  //   useEffect(() => {
-  //     if (boardNameRef.current) {
-  //       boardNameRef.current.focus();
-  //       boardNameRef.current.setSelectionRange(
-  //         boardNameRef.current.value.length,
-  //         boardNameRef.current.value.length
-  //       );
-  //     }
-  //   }, [state.isAddNewColumnOpen]);
 
   useEffect(() => {
     setIsLoading(false);
@@ -99,7 +88,6 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
                   className="bg-transparent placeholder:text-base text-base text-white border-[1px] border-gray-600 focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-[#726fdb] hover:border-[#726fdb]"
                   {...field}
                   disabled
-                  //   ref={boardNameRef}
                 />
               </FormControl>
               <FormMessage />

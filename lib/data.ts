@@ -65,8 +65,6 @@ export async function getBoardTabs() {
       _id: board._id.toString(),
     })); // Convert to plain objects
 
-    // console.log("USER CHECKING", boardsMg);
-
     if (!boards) {
       console.log("No boards found for the user.");
       return [];
@@ -103,8 +101,6 @@ export async function getBoardData(query: string) {
         },
       });
 
-    // console.log("Board RAW DATA", boardRawData[0].columns[0].tasks[0]);
-
     if (boardRawData.length > 0 && boardRawData[0].columns) {
       const boardData = boardRawData.map((board) => ({
         board_id: board._id.toString(),
@@ -128,8 +124,6 @@ export async function getBoardData(query: string) {
         })),
       }));
 
-      // console.log("Mapped Board Data Columns:", boardData[0].columns[0]);
-      // console.log("Mapped Board Data Tasks:", boardData[0].columns[0].tasks);
       return boardData;
     } else {
       console.log("No columns found for the given board.");
@@ -139,6 +133,4 @@ export async function getBoardData(query: string) {
     console.error("Error fetching boards Columns Data:", error);
     return [];
   }
-
-  // console.log("Board DATA", boradRawData?.columns);
 }

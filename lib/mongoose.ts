@@ -1,4 +1,3 @@
-// lib/mongoose.ts
 import mongoose from "mongoose";
 
 const MONGODB_URI = process.env.NEXT_MONGODB_URI as string;

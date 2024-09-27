@@ -50,22 +50,17 @@ export async function createBoard(values: BoardType) {
       columns: columnIds,
     });
 
-    // console.log("Board Update with Id's", boardUpdate);
-
     const updatedUser = await User.findOneAndUpdate(
       { clerkId: userId },
       { $push: { boards: board._id } },
       { new: true }
     );
-    // console.log("Updated User with Board", updatedUser);
 
-    // Check if the user update was successful
     if (!updatedUser) {
       throw new Error("Failed to update the user with the new board.");
     }
 
     return board.board_name;
-    // revalidatePath("/")
   } catch (error) {
     console.error("Error creating board or updating user:", error);
     throw new Error("Failed to create board or update user.");
@@ -76,7 +71,7 @@ export async function checkBoardNameExists(name: string): Promise<boolean> {
   try {
     // Assuming this is a database call; ensure it returns a document or null
     const result = await Board.findOne({ board_name: name });
-    // console.log("Does board name exist?", result);
+
     return !!result; // Return true if the result exists, false otherwise
   } catch (error) {
     console.error("Error checking board name existence:", error);
@@ -338,8 +333,6 @@ export const deleteTask = async (task_id: string) => {
 };
 
 export const editBoard = async (board: Board, prevBoard: Board) => {
-  // console.log("Checking Values", board, "Prev", prevBoard);
-
   const { userId } = auth();
 
   if (!userId) {
@@ -368,7 +361,6 @@ export const editBoard = async (board: Board, prevBoard: Board) => {
       .map((col) => (col.column_id === "" ? col.column_name : ""))
       .filter((col) => col !== "");
 
-    // console.log(existingColumnIds)
     for (const col of prevBoard.columns) {
       if (!existingColumnIds.includes(col.column_id)) {
         const res = await Column.findById(col.column_id).select("tasks");
@@ -439,7 +431,7 @@ export const deleteBoard = async (board_id: string) => {
     await Promise.all(
       board.columns.map(async (column_id: mongoose.Types.ObjectId) => {
         const colObj = await Column.findById(column_id).select("tasks");
-        // console.log("Column", tasks)
+
         colObj.tasks.map(async (task_id: mongoose.Types.ObjectId) => {
           const taskObj = await Task.findById(task_id).select("subTasks");
 
@@ -449,11 +441,15 @@ export const deleteBoard = async (board_id: string) => {
 
           await Task.findByIdAndDelete(task_id);
         });
+
         await Column.findByIdAndDelete(column_id);
       })
     );
+
     await Board.findByIdAndDelete(board_id);
+
     const user = await User.where("clerkId").equals(`${userId}`).select("_id");
+
     await User.findByIdAndUpdate(user[0]._id, {
       $pull: { boards: board_id },
     });
