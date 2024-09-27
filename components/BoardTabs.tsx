@@ -66,7 +66,7 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
           <ul className="pr-6 space-y-4 max-h-[25rem] overflow-y-auto no-scrollbar">
             {boardTabs.map((board: BoardTab, idx) => (
               <li
-                key={idx}
+                key={`board-${idx}`}
                 className={`text-gray-400 flex items-center gap-x-2 py-4 pl-6 rounded-r-full cursor-pointer ${
                   active === board.board_name
                     ? "bg-[#635FC7] text-white"
