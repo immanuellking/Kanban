@@ -59,6 +59,18 @@ export const reducer = (state: StateType, action: ActionType) => {
         isDeleteBoard: false,
       };
 
+    case "OPEN_MOBILE_BOARD_TABS":
+      return {
+        ...state,
+        isMobileTabsOpen: true,
+      };
+
+    case "CLOSE_MOBILE_BOARD_TABS":
+      return {
+        ...state,
+        isMobileTabsOpen: false,
+      };
+
     default:
       return state;
   }
