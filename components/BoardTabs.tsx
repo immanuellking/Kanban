@@ -55,19 +55,19 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
 
   return (
     <>
-      <div className="mt-[3rem] space-y-4 flex-1 h-full">
-        <span className="pl-6 text-gray-400 text-sm">
+      <div className="mt-0 sm:mt-[3rem] space-y-4 flex-1 h-full">
+        <span className="pl-3 sm:pl-6 text-gray-400 text-sm">
           {boardTabs.length > 0
             ? `All Boards (${boardTabs.length})`
             : "No boards"}
         </span>
 
         <div className="h-full">
-          <ul className="pr-6 space-y-4 max-h-[25rem] overflow-y-auto no-scrollbar">
+          <ul className="pr-3 lg:pr-6 space-y-4 max-h-[25rem] overflow-y-auto pb-4 no-scrollbar">
             {boardTabs.map((board: BoardTab, idx) => (
               <li
                 key={`board-${idx}`}
-                className={`text-gray-400 flex items-center gap-x-2 py-4 pl-6 rounded-r-full cursor-pointer ${
+                className={`text-gray-400 flex items-center gap-x-2 py-4 pl-3 lg:pl-6 rounded-r-full cursor-pointer ${
                   active === board.board_name
                     ? "bg-[#635FC7] text-white"
                     : "bg-transparent hover:text-[#635FC7] hover:bg-white transition-all duration-300 ease-linear"
@@ -92,14 +92,14 @@ export default function BoardTabs({ boardTabs }: { boardTabs: BoardTab[] }) {
                   <path d="M12 9h8"></path>
                   <path d="M12 4v16"></path>
                 </svg>
-                <p className="text-base capitalize font-medium">
+                <p className="text-base capitalize font-medium line-clamp-1">
                   {board.board_name}
                 </p>
               </li>
             ))}
           </ul>
           <button
-            className="flex items-center gap-x-2 text-[#635FC7] py-4 px-6 mt-2 rounded-r-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
+            className="flex items-center gap-x-2 text-[#635FC7] py-4 px-3 lg:px-6 mt-2 rounded-r-full cursor-pointer disabled:cursor-not-allowed disabled:opacity-60"
             onClick={() => openDialog()}
             disabled={!sessionId}
           >
