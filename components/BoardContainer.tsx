@@ -27,11 +27,11 @@ export default function BoardContainer({
 
   return (
     <>
-      <section className="w-full h-full bg-[#20212C]">
+      <section className="w-full h-[87vh] bg-[#20212C] pt-8 pb-2">
         {!isSignedIn ? (
           <LoginNow />
         ) : (
-          <div className="overflow-x-auto no-scrollbar flex h-full">
+          <div className="overflow-x-auto no-scrollbar w-full flex h-full">
             <ColumnContainers boardData={boardData} />
           </div>
         )}
