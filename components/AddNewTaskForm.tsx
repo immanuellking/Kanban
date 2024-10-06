@@ -22,12 +22,14 @@ import {
 } from "@/components/ui/select";
 import { useDialog } from "@/context/dialogContext";
 import { addNewTask, editTask } from "@/lib/action";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
+import { useToast } from "@/hooks/use-toast";
 
 export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   const { state, setIsLoading, closeNewTaskDialog } = useDialog();
   const [subTasksError, setSubTasksError] = useState<string>("");
+  const { toast } = useToast();
 
   const editValues = {
     title: state.task ? state.task.title : "",
@@ -92,7 +94,6 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   });
 
   const { handleSubmit, control, formState } = form;
-  const { errors } = formState;
 
   const { fields, append, remove } = useFieldArray({
     name: "subtasks",
@@ -114,20 +115,37 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
         setIsLoading(true);
         await addNewTask(updatedColumnVal);
         closeNewTaskDialog();
+        toast({
+          title: "New Task Added",
+          description: "You have successfully added a new Task",
+        });
       } catch (error) {
         setIsLoading(false);
         console.log("Failed to create Task", error);
+        toast({
+          title: "Failed",
+          description: "Failed to create add a new Task",
+          variant: "destructive",
+        });
       }
     } else {
       if (state.task) {
         try {
           setIsLoading(true);
-          console.log("Working!!!!!!");
           await editTask(updatedColumnVal, state.task);
           closeNewTaskDialog();
+          toast({
+            title: "Task Editeed",
+            description: "You have successfully edited Task",
+          });
         } catch (error) {
           setIsLoading(false);
           console.log("Failed to edit Task", error);
+          toast({
+            title: "Failed",
+            description: "Failed to edit Task",
+            variant: "destructive",
+          });
         }
       }
     }
