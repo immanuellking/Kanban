@@ -5,6 +5,7 @@ import { poppins } from "@/components/font";
 import { DialogProvider } from "@/context/dialogContext";
 import CreateNewBoardModal from "@/components/CreateNewBoardModal";
 import TaskViewModal from "@/components/TaskViewModal";
+import { Toaster } from "@/components/ui/toaster"
 
 export const metadata: Metadata = {
   title: {
@@ -28,6 +29,7 @@ export default function RootLayout({
             {children}
             <TaskViewModal />
             <CreateNewBoardModal />
+            <Toaster />
           </body>
         </html>
       </DialogProvider>
