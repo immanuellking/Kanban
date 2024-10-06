@@ -17,6 +17,7 @@ import { useDialog } from "@/context/dialogContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "./Loader";
 import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
+import { useToast } from "@/hooks/use-toast";
 
 export function AddNewBoardForm() {
   const { state, closeDialog, setIsLoading } = useDialog();
@@ -24,6 +25,8 @@ export function AddNewBoardForm() {
   const searchParams = useSearchParams();
 
   const { titleRef } = useRemoveHighlight();
+
+  const { toast } = useToast();
 
   const editValues = {
     board_name: state.board ? state.board.board_name : "",
@@ -94,15 +97,28 @@ export function AddNewBoardForm() {
         closeDialog();
         params.delete("board");
         router.push(`/?board=${board_name}`);
+        toast({
+          title: "New Board Created",
+          description: "You have successfully created a new Board",
+        });
       } else {
         if (state.board) {
           await editBoard(updatedBoardVal, state.board);
           closeDialog();
+          toast({
+            title: "Board Edited",
+            description: "You have successfully edited Board",
+          });
         }
       }
     } catch (error) {
       setIsLoading(false);
       console.log("Failed to create board", error);
+      toast({
+        title: "Failed",
+        description: "Failed to create/edit Board",
+        variant: "destructive",
+      });
     }
   }
 
