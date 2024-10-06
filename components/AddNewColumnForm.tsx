@@ -15,8 +15,11 @@ import { Input } from "@/components/ui/input";
 import { addNewColumn } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
 import { useEffect } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
+  const { toast } = useToast();
+
   async function isColumnNameUnique(name: string): Promise<boolean> {
     const boardColumns = boardData[0].columns;
     return !boardColumns.some((column) => column.column_name === name); // Return true if column name is unique
@@ -62,12 +65,20 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
       setIsLoading(true);
       await addNewColumn(updatedVal);
       closeNewColumnDialog();
+      toast({
+        title: "New Column(s) Created",
+        description: "You have successfully created a new Column(s)",
+      });
     } catch (error) {
       setIsLoading(false);
       console.log("Failed to create column(s)", error);
+      toast({
+        title: "Failed",
+        description: "Failed to create column(s)",
+        variant: "destructive",
+      });
     }
   }
-
 
   useEffect(() => {
     setIsLoading(false);
