@@ -7,10 +7,10 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { useDialog } from "@/context/dialogContext";
 import { deleteBoard } from "@/lib/action";
+import { useToast } from "@/hooks/use-toast";
 
 export default function DeleteBoardModal({
   boardName,
@@ -19,15 +19,25 @@ export default function DeleteBoardModal({
   boardName: string;
   boardId: string;
 }) {
+  const { toast } = useToast();
   const { state, closeDeleteBoard, setIsLoading } = useDialog();
 
   const handleDeleteBoard = async () => {
     setIsLoading(true);
     try {
       await deleteBoard(boardId);
-      closeDeleteBoard()
+      closeDeleteBoard();
+      toast({
+        title: "Board Deleted",
+        description: "You have successfully deleted Board",
+      });
     } catch (error) {
-      console.log(error);
+      console.log("Failed to delete Board", error);
+      toast({
+        title: "Failed",
+        description: "Failed to delete Board",
+        variant: "destructive",
+      });
     }
   };
 
