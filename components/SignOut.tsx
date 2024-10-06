@@ -1,4 +1,6 @@
-import { SignOutButton } from "@clerk/nextjs";
+"use client";
+import { useToast } from "@/hooks/use-toast";
+import { useClerk } from "@clerk/nextjs";
 import {
   Tooltip,
   TooltipContent,
@@ -7,11 +9,23 @@ import {
 } from "@/components/ui/tooltip";
 
 export default function SignOut() {
+  const { signOut } = useClerk();
+  const { toast } = useToast();
+
+  const handleSignOut = () => {
+    signOut({ redirectUrl: "/" });
+    toast({
+      title: "Signed Out",
+      description: "You've signed out successfully",
+      variant: "destructive",
+    });
+  };
+
   return (
-    <SignOutButton redirectUrl="/">
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger>
+          <span onClick={handleSignOut}>
             <svg
               stroke="currentColor"
               fill="currentColor"
@@ -29,12 +43,12 @@ export default function SignOut() {
                 </g>
               </g>
             </svg>
-          </TooltipTrigger>
-          <TooltipContent className="bg-[#2B2C37] border-none">
-            <p className="text-red-500">Sign Out</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </SignOutButton>
+          </span>
+        </TooltipTrigger>
+        <TooltipContent className="bg-[#2B2C37] border-none">
+          <p className="text-red-500">Sign Out</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
