@@ -18,8 +18,11 @@ import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
 import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
 import { capitalizeFirstLetter, subtaskTotal } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 
 export default function TaskViewModal() {
+  const { toast } = useToast();
+
   const {
     state,
     closeViewTaskDialog,
@@ -40,8 +43,17 @@ export default function TaskViewModal() {
     try {
       await deleteTask(id);
       closeViewTaskDialog();
+      toast({
+        title: "Task Deleted",
+        description: "You have successfully deleted Task",
+      });
     } catch (error) {
-      console.log(error);
+      console.log("Failed to delete Task",error);
+      toast({
+        title: "Failed",
+        description: "Failed to delete Task",
+        variant: "destructive",
+      });
     }
   };
 
