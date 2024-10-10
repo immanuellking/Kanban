@@ -10,7 +10,7 @@ async function Kanban({ boardQuery }: { boardQuery: string }) {
 
   return (
     <>
-      <main className="flex h-screen overflow-hidden">
+      <main className="flex w-full h-screen overflow-hidden">
         <SideBar boardTabs={boardTabs} />
         <MainBoard isSignedIn={isSignedIn} boardData={boardData} />
       </main>
