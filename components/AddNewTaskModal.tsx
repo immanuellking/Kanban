@@ -21,7 +21,7 @@ export default function AddNewTaskModal({ columns }: { columns: Column[] }) {
       <DialogContent
         className="bg-[#2B2C37] border-none h-[30rem]"
         hideCloseButton={true}
-        aria-description=""
+        aria-description="add-new-task"
       >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">
