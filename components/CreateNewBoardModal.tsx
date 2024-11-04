@@ -21,7 +21,7 @@ export default function CreateNewBoardModal() {
       <DialogContent
         className="bg-[#2B2C37] border-none max-h-[40rem]"
         hideCloseButton={true}
-        aria-description=""
+        aria-description="create-new-board"
       >
         <DialogHeader>
           <DialogTitle className="text-xl text-white">
