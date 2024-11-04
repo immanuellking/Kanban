@@ -19,9 +19,9 @@ import { useToast } from "@/hooks/use-toast";
 
 export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
   const { toast } = useToast();
+  const boardColumns = boardData[0].columns;
 
   async function isColumnNameUnique(name: string): Promise<boolean> {
-    const boardColumns = boardData[0].columns;
     return !boardColumns.some((column) => column.column_name === name); // Return true if column name is unique
   }
 
@@ -82,7 +82,7 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [boardData[0].columns]);
+  }, [boardColumns, setIsLoading]);
 
   return (
     <Form {...form}>
