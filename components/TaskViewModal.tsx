@@ -80,7 +80,7 @@ export default function TaskViewModal() {
       <DialogContent
         className="bg-[#2B2C37] border-none max-h-[30rem]"
         hideCloseButton={true}
-        aria-description=""
+        aria-description="view-task"
       >
         <DialogHeader className="flex relative">
           <DialogTitle className="text-xl text-white capitalize">
