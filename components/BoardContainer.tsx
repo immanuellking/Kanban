@@ -17,13 +17,12 @@ export default function BoardContainer({
   const searchParams = useSearchParams();
   const { setIsLoading } = useDialog();
 
-
   useEffect(() => {
     const params = new URLSearchParams(searchParams);
     if (params.get("board") === boardData[0]?.board_name) {
       setIsLoading(false);
     }
-  }, [boardData, searchParams]);
+  }, [boardData, searchParams, setIsLoading]);
 
   return (
     <>
