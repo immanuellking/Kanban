@@ -82,7 +82,7 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [boardColumns, setIsLoading]);
+  }, [boardColumns]);
 
   return (
     <Form {...form}>
