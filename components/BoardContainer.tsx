@@ -22,7 +22,7 @@ export default function BoardContainer({
     if (params.get("board") === boardData[0]?.board_name) {
       setIsLoading(false);
     }
-  }, [boardData, searchParams, setIsLoading]);
+  }, [boardData, searchParams]);
 
   return (
     <>
