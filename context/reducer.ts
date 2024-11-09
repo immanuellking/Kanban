@@ -4,7 +4,7 @@ export const reducer = (state: StateType, action: ActionType) => {
       return { ...state, isOpen: true };
 
     case "CLOSE_DIALOG":
-      return { ...state, isOpen: false };
+      return { ...state, isOpen: false, isEditingBoard: false };
 
     case "OPEN_NEW_COLUMN_DIALOG":
       return { ...state, isAddNewColumnOpen: true };
