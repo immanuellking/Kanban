@@ -51,6 +51,7 @@ type StateType = {
   board: Board | null;
   isDeleteBoard: boolean;
   isMobileTabsOpen: boolean;
+  dragData: Task | null;
 };
 
 type ActionType =
@@ -68,4 +69,5 @@ type ActionType =
   | { type: "OPEN_DELETE_BOARD" }
   | { type: "CLOSE_DELETE_BOARD" }
   | { type: "OPEN_MOBILE_BOARD_TABS" }
-  | { type: "CLOSE_MOBILE_BOARD_TABS" };
+  | { type: "CLOSE_MOBILE_BOARD_TABS" }
+  | { type: "SET_DRAG_DATA", payload: Task };
