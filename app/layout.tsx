@@ -5,7 +5,7 @@ import { poppins } from "@/components/font";
 import { DialogProvider } from "@/context/dialogContext";
 import CreateNewBoardModal from "@/components/CreateNewBoardModal";
 import TaskViewModal from "@/components/TaskViewModal";
-import { Toaster } from "@/components/ui/toaster"
+import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
   title: {
