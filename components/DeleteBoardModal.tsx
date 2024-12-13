@@ -39,6 +39,7 @@ export default function DeleteBoardModal({
         variant: "destructive",
       });
     }
+    // setIsLoading(false);
   };
 
   return (

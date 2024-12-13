@@ -1,10 +1,16 @@
 "use client";
 import Logo from "./Logo";
 import BoardTabs from "./BoardTabs";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useDialog } from "@/context/dialogContext";
 
 export default function SideBar({ boardTabs }: { boardTabs: BoardTab[] }) {
   const [open, setOpen] = useState<boolean>(true);
+  const { setIsLoading } = useDialog();
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [boardTabs]);
 
   return (
     <>
@@ -39,9 +45,7 @@ export default function SideBar({ boardTabs }: { boardTabs: BoardTab[] }) {
       </aside>
       <div
         className={`${
-          open
-            ? "hidden sm:hidden"
-            : "hidden sm:block absolute bottom-5 left-0"
+          open ? "hidden sm:hidden" : "hidden sm:block absolute bottom-5 left-0"
         } bg-[#635FC7] hover:bg-[#635Fc7]/80 text-white py-4 px-4 rounded-r-full cursor-pointer transition-all ease-linear duration-150`}
         onClick={() => setOpen(true)}
       >
