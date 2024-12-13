@@ -71,6 +71,12 @@ export const reducer = (state: StateType, action: ActionType) => {
         isMobileTabsOpen: false,
       };
 
+    case "SET_DRAG_DATA":
+      return {
+        ...state,
+        dragData: action.payload,
+      };
+
     default:
       return state;
   }
