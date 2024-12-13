@@ -459,3 +459,23 @@ export const deleteBoard = async (board_id: string) => {
 
   revalidatePath("/");
 };
+
+
+export const updateDropColumn = async (column_id: string, task: Task) => {
+  await Column.find({});
+
+  console.log("drop action");
+
+  await Column.findByIdAndUpdate(task.column_id, {
+    $pull: { tasks: task._id },
+  });
+  const newCol = await Column.findByIdAndUpdate(column_id, {
+    $push: { tasks: task._id },
+  });
+  await Task.findByIdAndUpdate(task._id, {
+    column_id: newCol._id,
+    column_name: newCol.column_name,
+  });
+
+  revalidatePath("/")
+};
