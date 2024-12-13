@@ -14,6 +14,7 @@ const initialState: StateType = {
   board: null,
   isDeleteBoard: false,
   isMobileTabsOpen: false,
+  dragData: null,
 };
 
 const DialogContext = createContext<{
@@ -34,6 +35,7 @@ const DialogContext = createContext<{
   closeDeleteBoard: () => void;
   openMobileBoardTabs: () => void;
   closeMobileBoardTabs: () => void;
+  setDragData: (task: Task) => void;
 }>({
   state: initialState,
   dispatch: () => null,
@@ -52,6 +54,7 @@ const DialogContext = createContext<{
   closeDeleteBoard: () => {},
   openMobileBoardTabs: () => {},
   closeMobileBoardTabs: () => {},
+  setDragData: () => {},
 });
 
 export function DialogProvider({ children }: { children: ReactNode }) {
@@ -117,6 +120,10 @@ export function DialogProvider({ children }: { children: ReactNode }) {
     dispatch({ type: "TOGGLE_LOADING_STATE", payload: value });
   };
 
+  const setDragData = (task: Task) => {
+    dispatch({ type: "SET_DRAG_DATA", payload: task });
+  };
+
   return (
     <DialogContext.Provider
       value={{
@@ -137,6 +144,7 @@ export function DialogProvider({ children }: { children: ReactNode }) {
         closeDeleteBoard,
         openMobileBoardTabs,
         closeMobileBoardTabs,
+        setDragData,
       }}
     >
       {children}
