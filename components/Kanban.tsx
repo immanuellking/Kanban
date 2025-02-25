@@ -1,10 +1,10 @@
 import SideBar from "./SideBar";
 import MainBoard from "./MainBoard";
-import { createNewUser, getBoardTabs, getBoardData } from "@/lib/data";
+import { getBoardTabs, getBoardData } from "@/lib/data";
 import MobileBoardTabs from "./MobileBoardTabs";
 
 async function Kanban({ boardQuery }: { boardQuery: string }) {
-  const isSignedIn = await createNewUser();
+  // const isSignedIn = await createNewUser();
   const boardTabs = await getBoardTabs();
   const boardData = await getBoardData(boardQuery);
 
@@ -12,7 +12,7 @@ async function Kanban({ boardQuery }: { boardQuery: string }) {
     <>
       <main className="flex w-full h-screen overflow-hidden">
         <SideBar boardTabs={boardTabs} />
-        <MainBoard isSignedIn={isSignedIn} boardData={boardData} />
+        <MainBoard boardData={boardData} />
       </main>
       <MobileBoardTabs boardTabs={boardTabs} />
     </>
