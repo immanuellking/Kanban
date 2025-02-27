@@ -22,6 +22,14 @@ export async function POST(request: NextRequest) {
 
   const { userId, board_name, columns } = values;
   try {
+
+    if (!userId) {
+      return NextResponse.json(
+        { success: false, error: "User is not authenticated." },
+        { status: 401 }
+      );
+    }
+
     const board = await Board.create({
       board_name: board_name.trim(),
       user_id: userId,
@@ -53,7 +61,7 @@ export async function POST(request: NextRequest) {
       }
     );
   } catch (error) {
-    console.error("Error Creating/Updating board:", error);
+    console.error("Error Creating board:", error);
 
     return NextResponse.json(
       {
