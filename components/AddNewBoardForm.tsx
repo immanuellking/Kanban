@@ -18,6 +18,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "./Loader";
 import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
 
 export function AddNewBoardForm() {
   const { state, closeDialog, setIsLoading } = useDialog();
@@ -27,6 +28,10 @@ export function AddNewBoardForm() {
   const { titleRef } = useRemoveHighlight();
 
   const { toast } = useToast();
+
+  const { userId } = useAuth();
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const editValues = {
     board_name: state.board ? state.board.board_name : "",
@@ -82,33 +87,43 @@ export function AddNewBoardForm() {
     name: "columns",
     control,
   });
-
+  const params = new URLSearchParams(searchParams);
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof FormSchema>) {
-    const params = new URLSearchParams(searchParams);
     const updatedBoardVal = {
       board_id: state.board ? state.board?.board_id : "",
       ...values,
     };
     setIsLoading(true);
     try {
-      if (!state.isEditingBoard) {
-        const board_name = await createBoard(values);
-        closeDialog();
-        params.delete("board");
-        router.push(`/?board=${board_name}`);
+      const isEditing = state.isEditingBoard;
+      const url = isEditing ? `${BASE_URL}/api/edit-board` : `${BASE_URL}/api/create-board`;
+      const method = isEditing ? "PATCH" : "POST";
+      const body = isEditing
+        ? JSON.stringify({ board: updatedBoardVal, prevBoard: state.board, userId })
+        : JSON.stringify({ ...values, userId });
+  
+      const response = await fetch(url, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body,
+      });
+  
+      const result = await response.json();
+  
+      if (result.success) {
         toast({
-          title: "New Board Created",
-          description: "You have successfully created a new Board",
+          title: isEditing ? "Board Edited" : "New Board Created",
+          description: result.message || (isEditing ? "Board updated successfully" : "You have successfully created a new Board"),
         });
-      } else {
-        if (state.board) {
-          await editBoard(updatedBoardVal, state.board);
-          closeDialog();
-          toast({
-            title: "Board Edited",
-            description: "You have successfully edited Board",
-          });
+  
+        closeDialog();
+  
+        if (isEditing) {
+          router.refresh();
+        } else {
+          params.delete("board");
+          router.push(`/?board=${result.board_name}`);
         }
       }
     } catch (error) {
