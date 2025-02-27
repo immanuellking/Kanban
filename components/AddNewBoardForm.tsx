@@ -12,7 +12,7 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { createBoard, checkBoardNameExists, editBoard } from "@/lib/action";
+// import { createBoard, checkBoardNameExists, editBoard } from "@/lib/action"; // server actions 
 import { useDialog } from "@/context/dialogContext";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Loader } from "./Loader";
@@ -47,8 +47,23 @@ export function AddNewBoardForm() {
     if (state.isEditingBoard && name === state.board?.board_name) {
       return true;
     }
-    const exists = await checkBoardNameExists(name); // Make sure this returns a boolean
-    return !exists; // Return true if the name is unique
+
+    try {
+      const response = await fetch("/api/check-board-name", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name }),
+      });
+
+      const result = await response.json();
+      console.log("RESULTTTTTT", result);
+      return !result.exists; // Returns true if board exists, false otherwise
+    } catch (error) {
+      console.error("Error checking board name:", error);
+      return false;
+    }
+    // const exists = await checkBoardNameExists(name); // Make sure this returns a boolean
+    // return !exists; // Return true if the name is unique
   }
 
   const ColumnSchema = z.object({
@@ -97,33 +112,43 @@ export function AddNewBoardForm() {
     setIsLoading(true);
     try {
       const isEditing = state.isEditingBoard;
-      const url = isEditing ? `${BASE_URL}/api/edit-board` : `${BASE_URL}/api/create-board`;
+      const url = isEditing
+        ? `${BASE_URL}/api/edit-board`
+        : `${BASE_URL}/api/create-board`;
       const method = isEditing ? "PATCH" : "POST";
       const body = isEditing
-        ? JSON.stringify({ board: updatedBoardVal, prevBoard: state.board, userId })
+        ? JSON.stringify({
+            board: updatedBoardVal,
+            prevBoard: state.board,
+            userId,
+          })
         : JSON.stringify({ ...values, userId });
-  
+
       const response = await fetch(url, {
         method,
         headers: { "Content-Type": "application/json" },
         body,
       });
-  
+
       const result = await response.json();
-  
+
       if (result.success) {
         toast({
           title: isEditing ? "Board Edited" : "New Board Created",
-          description: result.message || (isEditing ? "Board updated successfully" : "You have successfully created a new Board"),
+          description:
+            result.message ||
+            (isEditing
+              ? "Board updated successfully"
+              : "You have successfully created a new Board"),
         });
-  
+
         closeDialog();
-  
+
         if (isEditing) {
           router.refresh();
         } else {
           params.delete("board");
-          router.push(`/?board=${result.board_name}`);
+          router.push(`/?board=${result.board.board_name}`);
         }
       }
     } catch (error) {
