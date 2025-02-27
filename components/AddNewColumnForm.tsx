@@ -16,10 +16,15 @@ import { addNewColumn } from "@/lib/action";
 import { useDialog } from "@/context/dialogContext";
 import { useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
   const { toast } = useToast();
   const boardColumns = boardData[0].columns;
+  const { userId } = useAuth();
+  const router = useRouter();
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   async function isColumnNameUnique(name: string): Promise<boolean> {
     return !boardColumns.some((column) => column.column_name === name); // Return true if column name is unique
@@ -63,12 +68,20 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
     const updatedVal = { board_id: boardData[0].board_id, ...values };
     try {
       setIsLoading(true);
-      await addNewColumn(updatedVal);
-      closeNewColumnDialog();
-      toast({
-        title: "New Column(s) Created",
-        description: "You have successfully created a new Column(s)",
+      // await addNewColumn(updatedVal);
+      const response = await fetch(`${BASE_URL}/api/add-new-column`, {
+        method: "POST",
+        body: JSON.stringify({ ...updatedVal, userId }),
       });
+      const result = await response.json();
+      if (result.success) {
+        closeNewColumnDialog();
+        toast({
+          title: "New Column(s) Created",
+          description: "You have successfully created a new Column(s)",
+        });
+        router.refresh();
+      }
     } catch (error) {
       setIsLoading(false);
       console.log("Failed to create column(s)", error);
