@@ -43,7 +43,7 @@ export async function DELETE(request: NextRequest) {
     });
 
     return NextResponse.json(
-      { success: true, message: "Board created successfully.", board },
+      { success: true, message: "Board Deleted successfully.", board },
       {
         status: 201,
       }
