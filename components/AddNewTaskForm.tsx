@@ -25,11 +25,18 @@ import { addNewTask, editTask } from "@/lib/action";
 import { useState } from "react";
 import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   const { state, setIsLoading, closeNewTaskDialog } = useDialog();
   const [subTasksError, setSubTasksError] = useState<string>("");
   const { toast } = useToast();
+  const { userId } = useAuth();
+  const router = useRouter();
+
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const editValues = {
     title: state.task ? state.task.title : "",
@@ -113,12 +120,20 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
     if (!state.isEditingTask) {
       try {
         setIsLoading(true);
-        await addNewTask(updatedColumnVal);
-        closeNewTaskDialog();
-        toast({
-          title: "New Task Added",
-          description: "You have successfully added a new Task",
+        // await addNewTask(updatedColumnVal);
+        const response = await fetch(`${BASE_URL}/api/add-new-task`, {
+          method: "POST",
+          body: JSON.stringify({ values: updatedColumnVal, userId }),
         });
+        const result = await response.json();
+        if (result.success) {
+          closeNewTaskDialog();
+          toast({
+            title: "New Task Added",
+            description: "You have successfully added a new Task",
+          });
+          router.refresh()
+        }
       } catch (error) {
         setIsLoading(false);
         console.log("Failed to create Task", error);
