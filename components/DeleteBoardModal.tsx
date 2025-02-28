@@ -11,6 +11,8 @@ import {
 import { useDialog } from "@/context/dialogContext";
 import { deleteBoard } from "@/lib/action";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function DeleteBoardModal({
   boardName,
@@ -21,16 +23,31 @@ export default function DeleteBoardModal({
 }) {
   const { toast } = useToast();
   const { state, closeDeleteBoard, setIsLoading } = useDialog();
+  const { userId } = useAuth();
+  const router = useRouter();
+
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const handleDeleteBoard = async () => {
     setIsLoading(true);
     try {
-      await deleteBoard(boardId);
-      closeDeleteBoard();
-      toast({
-        title: "Board Deleted",
-        description: "You have successfully deleted Board",
+      // await deleteBoard(boardId);
+      const response = await fetch(`${BASE_URL}/api/delete-board`, {
+        method: "DELETE",
+        body: JSON.stringify({
+          board_id: boardId,
+          userId,
+        }),
       });
+      const result = await response.json();
+      if (result.success) {
+        closeDeleteBoard();
+        toast({
+          title: "Board Deleted",
+          description: "You have successfully deleted Board",
+        });
+        router.push("/");
+      }
     } catch (error) {
       console.log("Failed to delete Board", error);
       toast({
