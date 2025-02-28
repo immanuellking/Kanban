@@ -18,10 +18,10 @@ export async function OPTIONS() {
 }
 
 export async function POST(request: NextRequest) {
-  const values = await request.json();
-
-  const { userId, board_name, columns } = values;
   try {
+    const values = await request.json();
+
+    const { userId, board_name, columns } = values;
 
     if (!userId) {
       return NextResponse.json(
