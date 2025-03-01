@@ -19,9 +19,14 @@ import { Label } from "./ui/label";
 import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
 import { capitalizeFirstLetter, subtaskTotal } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function TaskViewModal() {
   const { toast } = useToast();
+  const { userId } = useAuth();
+  const router = useRouter();
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
   const {
     state,
@@ -41,14 +46,22 @@ export default function TaskViewModal() {
   const handleDeleteTask = async (id: string) => {
     setIsLoading(true);
     try {
-      await deleteTask(id);
-      closeViewTaskDialog();
-      toast({
-        title: "Task Deleted",
-        description: "You have successfully deleted Task",
+      // await deleteTask(id);
+      const response = await fetch(`${BASE_URL}/api/delete-task`, {
+        method: "DELETE",
+        body: JSON.stringify({ task_id: id, userId }),
       });
+      const result = await response.json();
+      if (result.success) {
+        closeViewTaskDialog();
+        toast({
+          title: "Task Deleted",
+          description: "You have successfully deleted Task",
+        });
+        router.refresh()
+      }
     } catch (error) {
-      console.log("Failed to delete Task",error);
+      console.log("Failed to delete Task", error);
       toast({
         title: "Failed",
         description: "Failed to delete Task",
