@@ -27,6 +27,7 @@ import useRemoveHighlight from "@/custom-hooks/useRemoveHighlight";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { json } from "stream/consumers";
 
 export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   const { state, setIsLoading, closeNewTaskDialog } = useDialog();
@@ -34,7 +35,6 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
   const { toast } = useToast();
   const { userId } = useAuth();
   const router = useRouter();
-
 
   const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -117,52 +117,46 @@ export default function AddNewTaskForm({ columns }: { columns: Column[] }) {
 
     const updatedColumnVal = { column_id: column?._id, ...values };
 
-    if (!state.isEditingTask) {
-      try {
-        setIsLoading(true);
-        // await addNewTask(updatedColumnVal);
-        const response = await fetch(`${BASE_URL}/api/add-new-task`, {
-          method: "POST",
-          body: JSON.stringify({ values: updatedColumnVal, userId }),
-        });
-        const result = await response.json();
-        if (result.success) {
-          closeNewTaskDialog();
-          toast({
-            title: "New Task Added",
-            description: "You have successfully added a new Task",
-          });
-          router.refresh()
-        }
-      } catch (error) {
-        setIsLoading(false);
-        console.log("Failed to create Task", error);
+    setIsLoading(true);
+
+    try {
+      const isEditing = state.isEditingTask;
+      const url = isEditing
+        ? `${BASE_URL}/api/edit-task`
+        : `${BASE_URL}/api/add-new-task`;
+      const method = isEditing ? "PATCH" : "POST";
+      const body = isEditing
+        ? JSON.stringify({
+            userId,
+            values: updatedColumnVal,
+            prevVal: state.task,
+          })
+        : JSON.stringify({ values: updatedColumnVal, userId });
+
+      const response = await fetch(url, {
+        method,
+        body,
+      });
+      const result = await response.json();
+
+      if (result.success) {
         toast({
-          title: "Failed",
-          description: "Failed to create add a new Task",
-          variant: "destructive",
+          title: isEditing ? "Task Editeed" : "New Task Added",
+          description: isEditing
+            ? "You have successfully edited Task"
+            : "You have successfully added a new Task",
         });
+        closeNewTaskDialog();
+        router.refresh();
       }
-    } else {
-      if (state.task) {
-        try {
-          setIsLoading(true);
-          await editTask(updatedColumnVal, state.task);
-          closeNewTaskDialog();
-          toast({
-            title: "Task Editeed",
-            description: "You have successfully edited Task",
-          });
-        } catch (error) {
-          setIsLoading(false);
-          console.log("Failed to edit Task", error);
-          toast({
-            title: "Failed",
-            description: "Failed to edit Task",
-            variant: "destructive",
-          });
-        }
-      }
+    } catch (error) {
+      setIsLoading(false);
+      console.log("Failed to create/edit Task", error);
+      toast({
+        title: "Failed",
+        description: `Failed to create/edit add a new Task`,
+        variant: "destructive",
+      });
     }
   };
 
