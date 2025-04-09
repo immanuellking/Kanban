@@ -47,6 +47,8 @@ export default function DeleteBoardModal({
           description: "You have successfully deleted Board",
         });
         router.push("/");
+      } else {
+        throw new Error(`${result.error}`)
       }
     } catch (error) {
       console.log("Failed to delete Board", error);
