@@ -16,7 +16,7 @@ import {
 import { useDialog } from "@/context/dialogContext";
 import { Checkbox } from "./ui/checkbox";
 import { Label } from "./ui/label";
-import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
+// import { deleteTask, handleSubtaskIsCompleted } from "@/lib/action";
 import { capitalizeFirstLetter, subtaskTotal } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { useAuth } from "@clerk/nextjs";
@@ -58,7 +58,7 @@ export default function TaskViewModal() {
           title: "Task Deleted",
           description: "You have successfully deleted Task",
         });
-        router.refresh()
+        router.refresh();
       }
     } catch (error) {
       console.log("Failed to delete Task", error);
@@ -79,7 +79,30 @@ export default function TaskViewModal() {
         ),
       };
       openViewTaskDialog(updatedViewTask);
-      await handleSubtaskIsCompleted(val, id);
+      // await handleSubtaskIsCompleted(val, id);
+     try {
+      const response = await fetch(`${BASE_URL}/api/subtask/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify({ value: val, userId }),
+      });
+
+      const result = await response.json()
+
+      if(result.success) {
+        toast({
+          title: "Subtask Status",
+          description: `You have successfully ${val ? "checked" : "unchecked"} subtask`,
+        });
+        router.refresh()
+      }
+     } catch (error) {
+      console.log("Failed to check/uncheck subtask", error);
+      toast({
+        title: "Failed",
+        description: "Failed to update subtask",
+        variant: "destructive",
+      });
+     }
     }
   };
 
