@@ -51,7 +51,10 @@ async function fetchClerkUser(userId: string) {
 }
 
 export async function getBoardTabs() {
+  noStore();
   const { userId } = auth();
+
+  await dbConnect();
 
   if (!userId) {
     console.error("Failed to get Board Tabs data, User is not authenticated.");
@@ -82,8 +85,10 @@ export async function getBoardTabs() {
 }
 
 export async function getBoardData(query: string) {
-  noStore()
+  noStore();
   const { userId } = auth();
+
+  await dbConnect();
 
   if (!userId) {
     console.error("Failed to get Board Data, User is not authenticated.");
@@ -92,9 +97,9 @@ export async function getBoardData(query: string) {
 
   await dbConnect();
 
-  await Column.find({})
-  await Task.find({})
-  await SubTask.find({})
+  await Column.find({});
+  await Task.find({});
+  await SubTask.find({});
 
   try {
     const boardRawData = await Board.where("board_name")
@@ -102,14 +107,14 @@ export async function getBoardData(query: string) {
       .select("board_name columns")
       .populate({
         path: "columns",
-        model: "Column", 
+        model: "Column",
         populate: {
-          path: "tasks", 
+          path: "tasks",
           model: "Task",
           populate: {
             path: "subTasks",
             model: "SubTask",
-          }, 
+          },
         },
       });
 
