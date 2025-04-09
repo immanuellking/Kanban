@@ -66,8 +66,8 @@ export function AddNewColumnForm({ boardData }: { boardData: BoardData[] }) {
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof FormSchema>) {
     const updatedVal = { board_id: boardData[0].board_id, ...values };
+    setIsLoading(true);
     try {
-      setIsLoading(true);
       // await addNewColumn(updatedVal);
       const response = await fetch(`${BASE_URL}/api/add-new-column`, {
         method: "POST",
